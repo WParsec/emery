@@ -155,7 +155,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         <button
           type="submit"
           className={`w-full py-4 rounded-lg text-white ${
-            isFormValid ? "bg-green" : "bg-green opacity-50 cursor-not-allowed"
+            isFormValid
+              ? "bg-gradient-to-r from-dark-turquoise to-green rounded-lg"
+              : "bg-gradient-to-r from-dark-turquoise to-green rounded-lg opacity-50 cursor-not-allowed"
           }`}
           disabled={!isFormValid} // Disable the button if the form is not valid
         >

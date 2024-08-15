@@ -8,21 +8,13 @@ import Image from "next/image";
 import Coal from "@/assets/images/coal.png";
 import { loginSchema, registerSchema } from "@/validation";
 import * as yup from "yup";
-import { auth } from "@/firebaseConfig";
-import {
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  updateProfile,
-  createUserWithEmailAndPassword,
-} from "firebase/auth";
+import { registerUser, loginUser } from "@/services/auth"; // Import the new auth functions
+import { addUserToDatabase } from "@/db/users";
 
 // Components
 import Button from "@/components/Button";
 import LoginForm from "@/components/forms/LoginForm";
 import RegisterForm from "@/components/forms/RegisterForm";
-
-// Database
-import { AddUserToDatabase } from "@/utils/database/AddUserToDatabase";
 
 export default function Home() {
   const user = useAuth();
@@ -50,27 +42,18 @@ export default function Home() {
       setValidationErrors({});
 
       // If validation passes, proceed with Firebase Auth
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
+      const loggedInUser = await loginUser(email, password);
 
-      // Handle post login actions
-      console.log("Login successful:", user);
-      // Navigate user to /grindstone
+      console.log("Login successful:", loggedInUser);
       router.push("/grindstone");
     } catch (err) {
       if (err instanceof yup.ValidationError) {
-        // Collect and set validation errors
         const errors: Record<string, string> = {};
         err.inner.forEach((error) => {
           if (error.path) errors[error.path] = error.message;
         });
         setValidationErrors(errors);
       } else {
-        // Handle any other errors (e.g., Firebase errors)
         setError("Login failed. Please check your email and password.");
         console.error("Login failed:", err);
       }
@@ -90,22 +73,16 @@ export default function Home() {
         { abortEarly: false }
       );
       setValidationErrors({});
-      // Register the user with Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-      const userUid = user?.uid;
 
-      // Update the user's display name
-      await updateProfile(user, { displayName: name });
-      // Store the name and other details in the database
-      await AddUserToDatabase({ userUid, email });
-      // Handle post registration actions
-      console.log("Registration successful:", user);
-      // Navigate user to /grindstone
+      // Register the user with Firebase Auth and store details in Supabase
+      const registeredUser = await registerUser(name, email, password);
+
+      if (registeredUser && registeredUser.uid) {
+        // Insert the user into the Supabase database
+        await addUserToDatabase(registeredUser.uid, email, name);
+      }
+
+      console.log("Registration successful:", registeredUser);
       router.push("/grindstone");
     } catch (err) {
       if (err instanceof yup.ValidationError) {
@@ -143,7 +120,11 @@ export default function Home() {
               onClick={() => setIsLogin(true)}
               disabled={false}
               title="Login"
-              bgColor={isLogin ? "bg-green" : "bg-card-bg"}
+              bgColor={
+                isLogin
+                  ? "bg-gradient-to-r from-dark-turquoise to-green"
+                  : "bg-card-bg"
+              }
             />
           </div>
           <div className="w-1/2 ml-2">
@@ -151,7 +132,11 @@ export default function Home() {
               onClick={() => setIsLogin(false)}
               disabled={false}
               title="Register"
-              bgColor={!isLogin ? "bg-green" : "bg-card-bg"}
+              bgColor={
+                !isLogin
+                  ? "bg-gradient-to-r from-dark-turquoise to-green"
+                  : "bg-card-bg"
+              }
             />
           </div>
         </div>

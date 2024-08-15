@@ -2,15 +2,22 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLogout } from "@/hooks/useLogout";
 
 export default function Grindstone() {
   const user = useAuth();
   const router = useRouter();
   const logout = useLogout();
+  const [displayName, setDisplayName] = useState<string | null>(null);
 
-  const displayName = user?.displayName;
+  // Get the user's display name
+  useEffect(() => {
+    if (user) {
+      console.log("User:", user);
+      setDisplayName(user.displayName);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!user) {
