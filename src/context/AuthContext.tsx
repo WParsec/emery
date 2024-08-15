@@ -1,22 +1,29 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { auth } from "@/firebaseConfig"; // Ensure this is your Firebase config file
 import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "../firebaseConfig";
 
+// Create the AuthContext
 const AuthContext = createContext<User | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+      setCurrentUser(user);
     });
+
     return () => unsubscribe();
   }, []);
 
-  return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={currentUser}>{children}</AuthContext.Provider>
+  );
 };
 
-export const useAuth = () => useContext(AuthContext);
+// Custom hook to use the AuthContext
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

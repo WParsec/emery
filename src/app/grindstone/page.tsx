@@ -11,16 +11,12 @@ export default function Grindstone() {
   const logout = useLogout();
   const [displayName, setDisplayName] = useState<string | null>(null);
 
-  // Get the user's display name
+  // Get the user's display name and route if not logged in
   useEffect(() => {
     if (user) {
       console.log("User:", user);
       setDisplayName(user.displayName);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) {
+    } else {
       router.push("/");
     }
   }, [user, router]);

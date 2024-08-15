@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import "../styles/globals.css";
 import Link from "next/link";
 import { skranji } from "@/utils/fonts";
-import { AuthProvider } from "@/context/AuthContext"; // Import your AuthProvider
+import { AuthProvider } from "@/context/AuthContext";
+import Navbar from "@/components/navbar/nav";
 
 export const metadata: Metadata = {
   title: "Emery - Hone Your Skills",
@@ -20,12 +21,8 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
           <header className="p-4">
-            <div className="container mx-auto flex justify-start">
-              <Link href="/">
-                <p className={`text-2xl font-bold ${skranji.className}`}>
-                  Emery
-                </p>
-              </Link>
+            <div className="container mx-auto flex justify-between items-center">
+              <Navbar />
             </div>
           </header>
           <main className="flex-grow container mx-auto">{children}</main>

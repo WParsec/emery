@@ -85,7 +85,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   };
 
   return (
-    <div className="bg-card-bg p-8 rounded-lg">
+    <div className="bg-card-bg px-4 py-8 md:px-8 rounded-lg">
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-sm">Name</label>
