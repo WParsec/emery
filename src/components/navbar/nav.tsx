@@ -4,11 +4,15 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import LinkButton from "../LinkButton";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useLogout } from "@/hooks/useLogout";
 
 export default function Navbar() {
   const user = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const isLoggedIn = Boolean(user); // Check if the user is logged in
+  const isLoggedIn = Boolean(user);
+  const pathname = usePathname();
+  const logout = useLogout();
 
   return (
     <nav className="w-full bg-dark-gray text-white">
@@ -46,6 +50,7 @@ export default function Navbar() {
                 title="Grindstone"
                 route="/grindstone"
                 disabled={!isLoggedIn}
+                active={pathname.startsWith("/grindstone")}
               />
             </li>
             <li>
@@ -56,6 +61,7 @@ export default function Navbar() {
                 title="Habits"
                 route="/habits"
                 disabled={!isLoggedIn}
+                active={pathname.startsWith("/goals")}
               />
             </li>
             <li>
@@ -63,12 +69,13 @@ export default function Navbar() {
                 title="Achievements"
                 route="/achievements"
                 disabled={!isLoggedIn}
+                active={pathname.startsWith("/treasury")}
               />
             </li>
             <li>
               <LinkButton
                 title="Logout"
-                onClick={() => console.log("Logout clicked")}
+                onClick={logout}
                 disabled={!isLoggedIn}
               />
             </li>
@@ -78,37 +85,46 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden">
-          <ul className="flex flex-col items-center space-y-4 p-4">
-            <li>
+        <div className="md:hidden absolute w-full top-[92px] left-0 bg-black z-50">
+          <ul className="flex flex-col items-center space-y-4 p-4 justify-around h-full">
+            <li className="w-full text-center flex">
               <LinkButton
                 title="Grindstone"
                 route="/grindstone"
                 disabled={!isLoggedIn}
+                addClasses="w-full py-4 bg-card-bg rounded-lg"
               />
             </li>
-            <li>
-              <LinkButton title="Goals" route="/goals" disabled={!isLoggedIn} />
+            <li className="w-full text-center flex">
+              <LinkButton
+                title="Goals"
+                route="/goals"
+                disabled={!isLoggedIn}
+                addClasses="w-full py-4 bg-card-bg rounded-lg"
+              />
             </li>
-            <li>
+            <li className="w-full text-center flex">
               <LinkButton
                 title="Habits"
                 route="/habits"
                 disabled={!isLoggedIn}
+                addClasses="w-full py-4 bg-card-bg rounded-lg"
               />
             </li>
-            <li>
+            <li className="w-full text-center flex">
               <LinkButton
                 title="Achievements"
                 route="/achievements"
                 disabled={!isLoggedIn}
+                addClasses="w-full py-4 bg-card-bg rounded-lg"
               />
             </li>
-            <li>
+            <li className="w-full text-center flex">
               <LinkButton
                 title="Logout"
                 onClick={() => console.log("Logout clicked")}
                 disabled={!isLoggedIn}
+                addClasses="w-full py-4 bg-card-bg rounded-lg"
               />
             </li>
           </ul>

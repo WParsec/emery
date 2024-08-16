@@ -10,6 +10,7 @@ interface LinkButtonProps {
   onClick?: MouseEventHandler<HTMLAnchorElement>;
   active?: boolean;
   isSmall?: boolean;
+  addClasses?: string;
 }
 
 const LinkButton: React.FC<LinkButtonProps> = ({
@@ -19,13 +20,15 @@ const LinkButton: React.FC<LinkButtonProps> = ({
   onClick,
   active = false,
   isSmall = false,
+  addClasses = "",
 }) => {
   // Apply Montserrat font class and dynamic classes for styling
   const baseClasses = `font-montserrat ${isSmall ? "text-sm" : "text-base"} ${
     disabled ? "cursor-not-allowed opacity-50" : ""
   } ${
     active ? "text-green" : "text-white"
-  } hover:text-green transition-colors duration-300`;
+  } hover:text-green transition-colors duration-300
+  `;
 
   // If disabled, prevent the default link behavior
   const handleClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
@@ -37,7 +40,11 @@ const LinkButton: React.FC<LinkButtonProps> = ({
   };
 
   return (
-    <Link href={route} onClick={handleClick} className={baseClasses}>
+    <Link
+      href={route}
+      onClick={handleClick}
+      className={baseClasses + addClasses}
+    >
       {title}
     </Link>
   );
