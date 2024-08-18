@@ -99,7 +99,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex pt-8 justify-center h-screen">
+    <div className="flex pt-2 md:pt-8 justify-center">
       <div className="w-full max-w-lg px-4">
         <div className="h-[6rem]">
           <Image

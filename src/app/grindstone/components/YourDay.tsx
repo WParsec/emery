@@ -4,6 +4,8 @@ import React from "react";
 
 // components
 import HabitsSection from "./HabitsSection";
+import ButtonTransparent from "@/components/ButtonTransparent";
+import TasksSection from "./TaskSection";
 
 type YourDayProps = {
   habits: any[];
@@ -18,6 +20,26 @@ export default function YourDay({
   loading,
   error,
 }: YourDayProps) {
+  console.log("Habits in Your day:", habits);
+  console.log("Goals:", goals);
+
+  const tasks = [
+    {
+      id: "1",
+      name: "Task 1",
+      completed: false,
+    },
+    {
+      id: "2",
+      name: "Task 2",
+      completed: true,
+    },
+    {
+      id: "3",
+      name: "Task 3",
+      completed: false,
+    },
+  ];
   return (
     <div className="bg-dark-gray text-white rounded-lg">
       {/* Title */}
@@ -37,15 +59,7 @@ export default function YourDay({
         <HabitsSection habits={habits} loading={loading} error={error} />
 
         {/* Single Tasks Section */}
-        <div className="w-full md:w-1/2 border border-card-bg p-4 rounded-lg">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-sm font-medium">Single Tasks</h3>
-            <button className="bg-green text-white px-4 py-2 rounded-lg">
-              Add Task
-            </button>
-          </div>
-          {/* Single Tasks content goes here */}
-        </div>
+        <TasksSection tasks={tasks} loading={loading} error={error} />
       </div>
     </div>
   );

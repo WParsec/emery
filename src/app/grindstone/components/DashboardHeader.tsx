@@ -5,18 +5,50 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import CoalImage from "@/assets/images/coal.png";
 import { useCurrentDate } from "@/utils/useCurrentDate";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type DashboardHeaderProps = {
-  hasCategories: boolean;
   user: any;
+  habits: any[];
+  goals: any[];
+  loading: boolean;
 };
 
 export default function DashboardHeader({
-  hasCategories,
   user,
+  habits = [],
+  goals = [],
+  loading,
 }: DashboardHeaderProps) {
   const [displayName, setDisplayName] = useState<string | null>(null);
   const date = useCurrentDate();
+  const [categories, setCategories] = useState<string[]>([]);
+  const route = useRouter();
+
+  // Function to extract unique categories
+  const extractCategories = () => {
+    const allCategories = [
+      ...habits.map((habit) => habit.category),
+      ...goals.map((goal) => goal.category),
+    ];
+
+    // Filter out duplicates
+    const uniqueCategories = Array.from(new Set(allCategories));
+    setCategories(uniqueCategories as string[]);
+  };
+
+  useEffect(() => {
+    if (user && user.displayName) {
+      setDisplayName(user.displayName);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (habits.length > 0 || goals.length > 0) {
+      extractCategories();
+    }
+  }, [habits, goals]);
 
   useEffect(() => {
     if (user && user.displayName) {
@@ -42,21 +74,27 @@ export default function DashboardHeader({
         </div>
 
         {/* Categories */}
-        {hasCategories && (
+        {categories && (
           <div>
             <h2 className="text-md font-bold mb-4">Categories</h2>
             <div className="pb-0 flex gap-4 flex-wrap md:pb-4">
-              <div className="w-16 h-16 bg-card-bg rounded-md"></div>
-              <div className="w-16 h-16 bg-card-bg rounded-md"></div>
-              <div className="w-16 h-16 bg-card-bg rounded-md"></div>
+              {categories.map((category) => (
+                <Link
+                  href={`/category/${category}`}
+                  key={category}
+                  className="bg-card-bg transition-colors w-20 h-20 rounded-lg p-2 text-xs flex items-center text-center justify-center cursor-pointer hover:bg-lighter-black"
+                >
+                  {category}
+                </Link>
+              ))}
             </div>
           </div>
         )}
       </div>
 
       {/* Right Section: Coal Image and Motivational Quote */}
-      <div className="border border-lighter-black rounded-lg p-8 flex flex-col items-center justify-center w-full md:w-1/2 gap-4 order-1 md:order-2">
-        <div className="w-24 h-24 md:w-30 md:h-30">
+      <div className="rounded-lg p-8 flex flex-col items-center justify-center w-full md:w-1/2 gap-4 order-1 md:order-2">
+        <div className="w-20 h-20 md:w-30 md:h-30">
           <Image src={CoalImage} alt="Coal" className="object-contain" />
         </div>
         <p className="text-center lg:text-right text-sm text-silver">

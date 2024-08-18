@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 // components
 import DashboardHeader from "./components/DashboardHeader";
 import YourDay from "./components/YourDay";
+import GoalsSection from "./components/GoalsSection";
 
 // utils
 import useFetchUserData from "@/hooks/useFetchUserData";
@@ -14,7 +15,6 @@ import useFetchUserData from "@/hooks/useFetchUserData";
 export default function Grindstone() {
   const user = useAuth();
   const router = useRouter();
-  const [hasCategories, setHasCategories] = useState<boolean>(false);
 
   // Fetch user data
   const { habits, goals, habitLogs, loading, error } = useFetchUserData();
@@ -34,8 +34,14 @@ export default function Grindstone() {
 
   return (
     <div className="p-4 flex flex-col gap-8">
-      <DashboardHeader user={user} hasCategories={true} />
+      <DashboardHeader
+        user={user}
+        habits={habits}
+        goals={goals}
+        loading={loading}
+      />
       <YourDay habits={habits} goals={goals} loading={loading} error={error} />
+      <GoalsSection goals={goals} loading={loading} error={error} />
     </div>
   );
 }

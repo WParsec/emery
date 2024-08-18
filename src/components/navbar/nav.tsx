@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import LinkButton from "../LinkButton";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLogout } from "@/hooks/useLogout";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const user = useAuth();
@@ -13,6 +14,11 @@ export default function Navbar() {
   const isLoggedIn = Boolean(user);
   const pathname = usePathname();
   const logout = useLogout();
+  const router = useRouter();
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   return (
     <nav className="w-full bg-dark-gray text-white">
@@ -69,7 +75,7 @@ export default function Navbar() {
                 title="Achievements"
                 route="/achievements"
                 disabled={!isLoggedIn}
-                active={pathname.startsWith("/treasury")}
+                active={pathname.startsWith("/achievements")}
               />
             </li>
             <li>
@@ -122,7 +128,7 @@ export default function Navbar() {
             <li className="w-full text-center flex">
               <LinkButton
                 title="Logout"
-                onClick={() => console.log("Logout clicked")}
+                onClick={logout}
                 disabled={!isLoggedIn}
                 addClasses="w-full py-4 bg-card-bg rounded-lg"
               />

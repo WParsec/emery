@@ -4,18 +4,17 @@ CREATE TABLE users (
   display_name TEXT
 );
 
-
 CREATE TABLE goals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   description TEXT,
   start_date DATE DEFAULT CURRENT_DATE,
   end_date DATE,
-  category TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'General',  -- Added category field with default value
   priority TEXT,
   completed BOOLEAN DEFAULT FALSE,
   completion_date DATE,
-  user_id TEXT REFERENCES users(id) ON DELETE CASCADE  -- Using TEXT for user_id
+  user_id TEXT REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE habits (
@@ -26,9 +25,10 @@ CREATE TABLE habits (
   daily BOOLEAN DEFAULT FALSE,
   start_date DATE DEFAULT CURRENT_DATE,
   end_date DATE,
+  category TEXT NOT NULL DEFAULT 'General',  -- Added category field with default value
   completed BOOLEAN DEFAULT FALSE,
   completion_date DATE,
-  user_id TEXT REFERENCES users(id) ON DELETE CASCADE,  -- Using TEXT for user_id
+  user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
   goal_id UUID REFERENCES goals(id) ON DELETE SET NULL
 );
 
