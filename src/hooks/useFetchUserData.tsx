@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/utils/supabaseClient"; // Ensure your Supabase client is set up correctly
-import { useAuth } from "@/context/AuthContext"; // Assuming you have a context for auth
+import { supabase } from "@/utils/supabaseClient";
+import { useAuth } from "@/context/AuthContext";
 
 export default function useFetchUserData() {
   const [habits, setHabits] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [goals, setGoals] = useState<any[]>([]);
   const [habitLogs, setHabitLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -14,38 +15,49 @@ export default function useFetchUserData() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!user) return;
+        if (!user || !user.uid) return;
 
         // Fetch habits
-        let { data: habitsData, error: habitsError } = await supabase
+        const { data: habitsData, error: habitsError } = await supabase
           .from("habits")
           .select("*")
           .eq("user_id", user.uid);
 
         if (habitsError) throw habitsError;
 
+        // Fetch tasks
+        const { data: tasksData, error: tasksError } = await supabase
+          .from("tasks")
+          .select("*")
+          .eq("user_id", user.uid);
+
+        if (tasksError) throw tasksError;
+
         // Fetch goals
-        let { data: goalsData, error: goalsError } = await supabase
+        const { data: goalsData, error: goalsError } = await supabase
           .from("goals")
           .select("*")
           .eq("user_id", user.uid);
 
         if (goalsError) throw goalsError;
 
-        // Check if habitsData is not null or empty before mapping
-        let habitIds = habitsData
-          ? habitsData.map((habit: any) => habit.id)
-          : [];
-
         // Fetch habit logs if there are habit IDs
-        let { data: habitLogsData, error: habitLogsError } = await supabase
-          .from("habit_logs")
-          .select("*")
-          .in("habit_id", habitIds.length > 0 ? habitIds : [""]); // Ensure array is not empty
+        let habitLogsData = [];
+        if (habitsData && habitsData.length > 0) {
+          const habitIds = habitsData.map((habit: any) => habit.id);
 
-        if (habitLogsError) throw habitLogsError;
+          const { data, error: habitLogsError } = await supabase
+            .from("habit_logs")
+            .select("*")
+            .in("habit_id", habitIds);
 
+          if (habitLogsError) throw habitLogsError;
+          habitLogsData = data;
+        }
+
+        // Set data
         setHabits(habitsData || []);
+        setTasks(tasksData || []);
         setGoals(goalsData || []);
         setHabitLogs(habitLogsData || []);
       } catch (error: any) {
@@ -58,5 +70,5 @@ export default function useFetchUserData() {
     fetchData();
   }, [user]);
 
-  return { habits, goals, habitLogs, loading, error };
+  return { habits, goals, tasks, habitLogs, loading, error };
 }

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import Switch from "@mui/material/Switch";
 import { useRouter } from "next/navigation";
 import ButtonTransparent from "@/components/ButtonTransparent";
+import { format, addDays } from "date-fns"; // Import date-fns for easier date manipulation
 
 type Task = {
   id: string;
   name: string;
   completed: boolean;
+  due_date: string; // Ensure the due_date is present
 };
 
 type TasksSectionProps = {
@@ -27,6 +29,17 @@ export default function TasksSection({
   useEffect(() => {
     setTasks(initialTasks);
   }, [initialTasks]);
+
+  // Define today's and tomorrow's date
+  const today = format(new Date(), "yyyy-MM-dd");
+  const tomorrow = format(addDays(new Date(), 1), "yyyy-MM-dd");
+
+  // Filter tasks for today and tomorrow
+  const todayTasks = tasks.filter((task) => task.due_date === today);
+  const tomorrowTasks = tasks.filter((task) => task.due_date === tomorrow);
+
+  // Combine today's and tomorrow's tasks
+  const combinedTasks = [...todayTasks, ...tomorrowTasks];
 
   const handleTaskClick = (taskId: string) => {
     router.push(`/task/${taskId}`);
@@ -64,20 +77,25 @@ export default function TasksSection({
       </div>
       {error ? <div>{error}</div> : null}
       {loading ? <div>Loading...</div> : null}
-      {tasks.length > 0 ? (
+      {combinedTasks.length > 0 ? (
         <div>
-          {tasks.map((task: Task) => (
+          {combinedTasks.map((task: Task) => (
             <div
               key={task.id}
               onClick={() => handleTaskClick(task.id)} // Handle click for the entire task
-              className={`${
+              className={`transition-all ${
                 task.completed
                   ? "bg-gradient-to-r from-dark-turquoise to-green"
                   : "bg-card-bg"
+              } ${
+                task.due_date === today ? "bg-warning-orange" : ""
               } transition-all duration-300 flex justify-between items-center mb-4 p-4 rounded-lg cursor-pointer`}
             >
               <div>
                 <p className="text-sm">{task.name}</p>
+                <p className={`text-xs`}>
+                  Expires: {task.due_date === today ? "Today" : "Tomorrow"}
+                </p>
               </div>
               <Switch
                 checked={task.completed}

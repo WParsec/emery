@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ButtonTransparent from "@/components/ButtonTransparent";
@@ -52,6 +54,7 @@ export default function HabitsSection({
       const updatedHabits = habits.map((habit) =>
         habit.id === habitId ? { ...habit, completed } : habit
       );
+      console.log(updatedHabits);
       setHabits(updatedHabits);
 
       console.log(

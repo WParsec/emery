@@ -80,8 +80,6 @@ export default function GoalsSection({
 
               {/* Right Section: End Date, Progress Bars */}
               <div className="w-full md:w-1/2 flex flex-col justify-between">
-                <p className="text-xs text-right">End date: {goal.end_date}</p>
-
                 {/* Progress Bar */}
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs">Progress:</p>
