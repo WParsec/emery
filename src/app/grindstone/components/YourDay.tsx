@@ -17,21 +17,22 @@ type YourDayProps = {
 };
 
 export default function YourDay({
-  habits,
-  tasks,
+  habits: initialHabits,
+  tasks: initialTasks,
   habitLogs,
   loading,
   error,
 }: YourDayProps) {
+  const [habits, setHabits] = useState(initialHabits);
+  const [tasks, setTasks] = useState(initialTasks);
   const [completedItems, setCompletedItems] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
 
-  // Calculate the total and completed items whenever habits, tasks, or habitLogs change
   useEffect(() => {
-    console.log("Calculating progress...");
-    console.log("Habits:", habits);
-    console.log("Tasks:", tasks);
+    calculateProgress(habits, tasks);
+  }, [habits, tasks]); // Depend on habits and tasks state
 
+  const calculateProgress = (habits: any[], tasks: any[]) => {
     const total = tasks.length + habits.length;
     const completed =
       tasks.filter((task) => task.completed).length +
@@ -39,29 +40,38 @@ export default function YourDay({
 
     setTotalItems(total);
     setCompletedItems(completed);
+  };
 
-    console.log("Total Items:", total);
-    console.log("Completed Items:", completed);
-  }, [tasks, habits, habitLogs]);
+  const handleHabitStatusChange = (updatedHabits: any[]) => {
+    setHabits(updatedHabits); // Update the habits state
+    calculateProgress(updatedHabits, tasks); // Recalculate progress with updated habits
+  };
+
+  const handleTaskStatusChange = (updatedTasks: any[]) => {
+    setTasks(updatedTasks); // Update the tasks state
+    calculateProgress(habits, updatedTasks); // Recalculate progress with updated tasks
+  };
 
   return (
     <div className="bg-dark-gray text-white rounded-lg">
-      {/* Title */}
       <h2 className="text-md font-bold mb-4">Your Day</h2>
-
-      {/* Progress Bar */}
       <YourDayProgress
         completedItems={completedItems}
         totalItems={totalItems}
       />
-
-      {/* Main Sections: Habits and Single Tasks */}
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Habits Section */}
-        <HabitsSection habits={habits} loading={loading} error={error} />
-
-        {/* Single Tasks Section */}
-        <TasksSection tasks={tasks} loading={loading} error={error} />
+        <HabitsSection
+          habits={habits}
+          loading={loading}
+          error={error}
+          onHabitStatusChange={handleHabitStatusChange} // Pass the callback function here
+        />
+        <TasksSection
+          tasks={tasks}
+          loading={loading}
+          error={error}
+          // onTaskStatusChange={handleTaskStatusChange} // Add a similar handler for tasks
+        />
       </div>
     </div>
   );
