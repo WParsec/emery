@@ -17,20 +17,28 @@ type YourDayProps = {
 };
 
 export default function YourDay({
-  habits: initialHabits,
-  tasks: initialTasks,
+  habits,
+  tasks,
   habitLogs,
   loading,
   error,
 }: YourDayProps) {
-  const [habits, setHabits] = useState(initialHabits);
-  const [tasks, setTasks] = useState(initialTasks);
+  const [habitsState, setHabitsState] = useState<any[]>(habits);
+  const [tasksState, setTasksState] = useState<any[]>(tasks);
   const [completedItems, setCompletedItems] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
 
+  console.log("Habits in YourDay", habitsState);
+  console.log("Tasks in YourDay", tasksState);
+
   useEffect(() => {
-    calculateProgress(habits, tasks);
-  }, [habits, tasks]); // Depend on habits and tasks state
+    setHabitsState(habits); // Update state when props change
+    setTasksState(tasks); // Update state when props change
+  }, [habits, tasks]);
+
+  useEffect(() => {
+    calculateProgress(habitsState, tasksState);
+  }, [habitsState, tasksState]); // Depend on habits and tasks state
 
   const calculateProgress = (habits: any[], tasks: any[]) => {
     const total = tasks.length + habits.length;
@@ -43,13 +51,13 @@ export default function YourDay({
   };
 
   const handleHabitStatusChange = (updatedHabits: any[]) => {
-    setHabits(updatedHabits); // Update the habits state
-    calculateProgress(updatedHabits, tasks); // Recalculate progress with updated habits
+    setHabitsState(updatedHabits); // Update the habits state
+    calculateProgress(updatedHabits, tasksState); // Recalculate progress with updated habits
   };
 
   const handleTaskStatusChange = (updatedTasks: any[]) => {
-    setTasks(updatedTasks); // Update the tasks state
-    calculateProgress(habits, updatedTasks); // Recalculate progress with updated tasks
+    setTasksState(updatedTasks); // Update the tasks state
+    calculateProgress(habitsState, updatedTasks); // Recalculate progress with updated tasks
   };
 
   return (
@@ -61,13 +69,13 @@ export default function YourDay({
       />
       <div className="flex flex-col md:flex-row gap-8">
         <HabitsSection
-          habits={habits}
+          habits={habitsState}
           loading={loading}
           error={error}
           onHabitStatusChange={handleHabitStatusChange} // Pass the callback function here
         />
         <TasksSection
-          tasks={tasks}
+          tasks={tasksState}
           loading={loading}
           error={error}
           // onTaskStatusChange={handleTaskStatusChange} // Add a similar handler for tasks

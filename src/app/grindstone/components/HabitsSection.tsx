@@ -29,6 +29,8 @@ export default function HabitsSection({
   const [habits, setHabits] = useState<Habit[]>(initialHabits);
   const router = useRouter();
 
+  console.log("Habits:", initialHabits);
+
   const {
     updateHabitStatus,
     error: updateError,

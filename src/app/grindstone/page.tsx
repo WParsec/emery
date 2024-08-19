@@ -20,6 +20,9 @@ export default function Grindstone() {
   const { habits, goals, tasks, habitLogs, loading, error } =
     useFetchUserData();
 
+  console.log("Habits in Page:", habits);
+  console.log("Tasks in Page:", tasks);
+
   // Get the user's display name and route if not logged in
   useEffect(() => {
     if (user) {
@@ -46,6 +49,7 @@ export default function Grindstone() {
         goals={goals}
         loading={loading}
         error={error}
+        habitLogs={habitLogs}
         tasks={tasks}
       />
       <GoalsSection goals={goals} loading={loading} error={error} />
