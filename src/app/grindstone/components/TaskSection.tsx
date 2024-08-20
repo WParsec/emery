@@ -2,67 +2,61 @@ import React, { useState, useEffect } from "react";
 import Switch from "@mui/material/Switch";
 import { useRouter } from "next/navigation";
 import ButtonTransparent from "@/components/ButtonTransparent";
-import { format, addDays } from "date-fns"; // Import date-fns for easier date manipulation
+import { format } from "date-fns";
+import useUpdateTaskStatus from "@/hooks/useUpdateTaskStatus";
+import { TaskToggle } from "@/components/ToggleSwitch";
 
 type Task = {
   id: string;
   name: string;
   completed: boolean;
-  due_date: string; // Ensure the due_date is present
+  due_date: string;
 };
 
 type TasksSectionProps = {
   tasks: Task[];
   loading: boolean;
   error: string | null;
+  onTaskStatusChange: (updatedTasks: Task[]) => void; // Callback function to pass the updated tasks
 };
 
 export default function TasksSection({
   tasks: initialTasks,
   loading,
   error,
+  onTaskStatusChange,
 }: TasksSectionProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const router = useRouter();
+  const {
+    updateTaskStatus,
+    loading: updateLoading,
+    error: updateError,
+  } = useUpdateTaskStatus();
 
-  // Use useEffect to update tasks state when initialTasks prop changes
   useEffect(() => {
     setTasks(initialTasks);
   }, [initialTasks]);
 
-  // Define today's and tomorrow's date
   const today = format(new Date(), "yyyy-MM-dd");
-  const tomorrow = format(addDays(new Date(), 1), "yyyy-MM-dd");
-
-  // Filter tasks for today and tomorrow
-  const todayTasks = tasks.filter((task) => task.due_date === today);
-  const tomorrowTasks = tasks.filter((task) => task.due_date === tomorrow);
-
-  // Combine today's and tomorrow's tasks
-  const combinedTasks = [...todayTasks, ...tomorrowTasks];
 
   const handleTaskClick = (taskId: string) => {
     router.push(`/task/${taskId}`);
   };
 
-  const handleToggleComplete = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    taskId: string,
-    completed: boolean
-  ) => {
-    e.stopPropagation(); // Prevent the click event from bubbling up to the parent
-    // Update the state locally for visual feedback
-    const updatedTasks = tasks.map((task) =>
-      task.id === taskId ? { ...task, completed } : task
-    );
-    setTasks(updatedTasks);
+  const handleToggleComplete = async (taskId: string, completed: boolean) => {
+    try {
+      await updateTaskStatus(taskId, completed);
 
-    console.log(
-      `Task ${taskId} is now ${completed ? "complete" : "incomplete"}`
-    );
-
-    // Here, you can call the API to persist the state change in the database
-    // e.g., updateTaskStatus(taskId, completed);
+      const updatedTasks = tasks.map((task) =>
+        task.id === taskId ? { ...task, completed } : task
+      );
+      setTasks(updatedTasks);
+      onTaskStatusChange(updatedTasks); // Pass the updated tasks array back to the parent component
+    } catch (error) {
+      console.error("Failed to update task status:", error);
+      // Show error to user
+    }
   };
 
   const handleAddTask = () => {
@@ -77,18 +71,16 @@ export default function TasksSection({
       </div>
       {error ? <div>{error}</div> : null}
       {loading ? <div>Loading...</div> : null}
-      {combinedTasks.length > 0 ? (
+      {tasks.length > 0 ? (
         <div>
-          {combinedTasks.map((task: Task) => (
+          {tasks.map((task: Task) => (
             <div
               key={task.id}
-              onClick={() => handleTaskClick(task.id)} // Handle click for the entire task
-              className={`transition-all ${
+              onClick={() => handleTaskClick(task.id)}
+              className={`${
                 task.completed
                   ? "bg-gradient-to-r from-dark-turquoise to-green"
-                  : "bg-card-bg"
-              } ${
-                task.due_date === today ? "bg-warning-orange" : ""
+                  : "bg-warning-orange"
               } transition-all duration-300 flex justify-between items-center mb-4 p-4 rounded-lg cursor-pointer`}
             >
               <div>
@@ -97,19 +89,17 @@ export default function TasksSection({
                   Expires: {task.due_date === today ? "Today" : "Tomorrow"}
                 </p>
               </div>
-              <Switch
-                checked={task.completed}
-                onChange={(e) =>
-                  handleToggleComplete(e, task.id, e.target.checked)
-                }
-                color="primary"
-                onClick={(e) => e.stopPropagation()} // Prevent click event from propagating to parent
+              <TaskToggle
+                task={task}
+                onToggleComplete={handleToggleComplete}
+                loading={updateLoading}
+                error={updateError}
               />
             </div>
           ))}
         </div>
       ) : (
-        <div>No tasks yet.</div>
+        <div>No tasks for today!</div>
       )}
     </div>
   );

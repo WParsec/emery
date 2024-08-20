@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/utils/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
+import { format } from "date-fns";
 
 export default function useFetchUserData() {
   const [habits, setHabits] = useState<any[]>([]);
@@ -11,6 +12,7 @@ export default function useFetchUserData() {
   const [error, setError] = useState<string | null>(null);
 
   const user = useAuth();
+  const today = format(new Date(), "yyyy-MM-dd");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,7 +31,8 @@ export default function useFetchUserData() {
         const { data: tasksData, error: tasksError } = await supabase
           .from("tasks")
           .select("*")
-          .eq("user_id", user.uid);
+          .eq("user_id", user.uid)
+          .gte("due_date", today);
 
         if (tasksError) throw tasksError;
 

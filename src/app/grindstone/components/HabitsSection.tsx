@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ButtonTransparent from "@/components/ButtonTransparent";
 import HabitToggle from "@/components/ToggleSwitch";
 import useUpdateHabitStatus from "@/hooks/useUpdateHabitStatus";
+import Modal from "@/components/modal/Modal";
 
 type Habit = {
   id: string;
@@ -24,12 +25,23 @@ export default function HabitsSection({
   habits: initialHabits,
   loading,
   error,
-  onHabitStatusChange, // Destructure the callback function prop
+  onHabitStatusChange,
 }: HabitsSectionProps) {
   const [habits, setHabits] = useState<Habit[]>(initialHabits);
   const router = useRouter();
 
   console.log("Habits:", initialHabits);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleAddHabit = () => {
+    console.log("Add habit");
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const {
     updateHabitStatus,
@@ -47,21 +59,16 @@ export default function HabitsSection({
   };
 
   const handleToggleComplete = async (habitId: string, completed: boolean) => {
-    await updateHabitStatus(habitId, completed);
-
-    if (!updateError) {
+    try {
+      await updateHabitStatus(habitId, completed);
       const updatedHabits = habits.map((habit) =>
         habit.id === habitId ? { ...habit, completed } : habit
       );
       setHabits(updatedHabits);
       onHabitStatusChange(updatedHabits); // Pass the updated habits array back to the parent component
-    } else {
+    } catch {
       console.error("Failed to update habit status");
     }
-  };
-
-  const handleAddHabit = () => {
-    console.log("Add habit");
   };
 
   return (
@@ -103,6 +110,11 @@ export default function HabitsSection({
       ) : (
         <div>No habits yet.</div>
       )}
+
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title="Add Habit">
+        {/* Modal Content goes here */}
+        <div>Add Habit Form</div>
+      </Modal>
     </div>
   );
 }

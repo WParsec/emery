@@ -78,7 +78,7 @@ export default function YourDay({
           tasks={tasksState}
           loading={loading}
           error={error}
-          // onTaskStatusChange={handleTaskStatusChange} // Add a similar handler for tasks
+          onTaskStatusChange={handleTaskStatusChange} // Add a similar handler for tasks
         />
       </div>
     </div>
