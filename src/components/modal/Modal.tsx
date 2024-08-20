@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { CSSTransition } from "react-transition-group"; // Import CSSTransition for animations
+import React, { useEffect } from "react";
+import { CSSTransition } from "react-transition-group";
 
 type ModalProps = {
   isOpen: boolean;
@@ -16,33 +16,43 @@ export default function Modal({
   children,
   title,
 }: ModalProps) {
-  // Handle escape key to close modal
+  // Handle escape key to close modal and prevent background scrolling
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onClose();
       }
     };
+
+    if (isOpen) {
+      // Prevent background scrolling
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      // Allow background scrolling when the modal is closed
+      document.documentElement.style.overflow = "auto";
+    }
+
     window.addEventListener("keydown", handleEsc);
 
     return () => {
       window.removeEventListener("keydown", handleEsc);
+      document.documentElement.style.overflow = "auto"; // Reset scrolling on unmount
     };
-  }, [onClose]);
+  }, [isOpen, onClose]);
 
   return (
     <CSSTransition in={isOpen} timeout={300} classNames="modal" unmountOnExit>
-      <div className="fixed inset-0 z-50 p-4">
+      <div className="fixed inset-0 z-50 p-4 flex justify-center items-center">
         {/* Modal Backdrop */}
         <div
-          className="absolute inset-0 bg-black bg-opacity-70"
+          className="absolute inset-0 bg-black bg-opacity-90"
           onClick={onClose}
         ></div>
 
         {/* Modal Content */}
-        <div className="relative bg-card-bg dark:bg-dark-gray w-full max-w-xl mx-auto mt-24 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out">
+        <div className="relative bg-card-bg dark:bg-dark-gray w-full max-w-xl mx-auto rounded-lg shadow-lg transform transition-all duration-300 ease-in-out max-h-full overflow-y-auto">
           {/* Modal Header */}
-          <div className="flex justify-between items-center p-4 border-b border-gray-300">
+          <div className="flex justify-between items-center py-4 px-8">
             <h2 className="text-lg font-semibold">{title}</h2>
             <button onClick={onClose} className="text-xl font-bold">
               &times;
@@ -50,7 +60,7 @@ export default function Modal({
           </div>
 
           {/* Modal Body */}
-          <div className="p-4">{children}</div>
+          <div>{children}</div>
         </div>
       </div>
     </CSSTransition>

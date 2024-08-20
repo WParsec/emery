@@ -94,7 +94,7 @@ export default function DashboardHeader({
 
       {/* Right Section: Coal Image and Motivational Quote */}
       <div className="rounded-lg p-8 flex flex-col items-center justify-center w-full md:w-1/2 gap-4 order-1 md:order-2">
-        <div className="w-20 h-20 md:w-30 md:h-30">
+        <div className="w-[8rem] h-[6rem]">
           <Image src={CoalImage} alt="Coal" className="object-contain" />
         </div>
         <p className="text-center lg:text-right text-sm text-silver">

@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import ButtonTransparent from "@/components/ButtonTransparent";
 import HabitToggle from "@/components/ToggleSwitch";
 import useUpdateHabitStatus from "@/hooks/useUpdateHabitStatus";
+
+// Modal
 import Modal from "@/components/modal/Modal";
+import NewHabitForm from "@/components/forms/NewHabitForm";
 
 type Habit = {
   id: string;
@@ -113,7 +116,7 @@ export default function HabitsSection({
 
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} title="Add Habit">
         {/* Modal Content goes here */}
-        <div>Add Habit Form</div>
+        <NewHabitForm onSubmit={() => {}} onCancel={handleCloseModal} />
       </Modal>
     </div>
   );
