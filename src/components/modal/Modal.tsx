@@ -26,17 +26,21 @@ export default function Modal({
 
     if (isOpen) {
       // Prevent background scrolling
-      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
     } else {
       // Allow background scrolling when the modal is closed
-      document.documentElement.style.overflow = "auto";
+      document.body.style.overflow = "";
+      document.body.style.position = "";
     }
 
     window.addEventListener("keydown", handleEsc);
 
     return () => {
       window.removeEventListener("keydown", handleEsc);
-      document.documentElement.style.overflow = "auto"; // Reset scrolling on unmount
+      document.body.style.overflow = ""; // Reset scrolling on unmount
+      document.body.style.position = "";
     };
   }, [isOpen, onClose]);
 
@@ -60,7 +64,7 @@ export default function Modal({
           </div>
 
           {/* Modal Body */}
-          <div>{children}</div>
+          <div className="p-4">{children}</div>
         </div>
       </div>
     </CSSTransition>
