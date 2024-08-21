@@ -26,7 +26,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("User:", user);
     if (user) {
       router.push("/grindstone");
     }
@@ -44,7 +43,6 @@ export default function Home() {
       // If validation passes, proceed with Firebase Auth
       const loggedInUser = await loginUser(email, password);
 
-      console.log("Login successful:", loggedInUser);
       router.push("/grindstone");
     } catch (err) {
       if (err instanceof yup.ValidationError) {
@@ -82,7 +80,6 @@ export default function Home() {
         await addUserToDatabase(registeredUser.uid, email, name);
       }
 
-      console.log("Registration successful:", registeredUser);
       router.push("/grindstone");
     } catch (err) {
       if (err instanceof yup.ValidationError) {

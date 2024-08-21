@@ -14,22 +14,22 @@ type YourDayProps = {
   habitLogs: any[];
   loading: boolean;
   error: string | null;
+  onHabitUpdate: (updatedHabits: any[]) => void;
 };
 
 export default function YourDay({
+  goals,
   habits,
   tasks,
   habitLogs,
   loading,
   error,
+  onHabitUpdate,
 }: YourDayProps) {
   const [habitsState, setHabitsState] = useState<any[]>(habits);
   const [tasksState, setTasksState] = useState<any[]>(tasks);
   const [completedItems, setCompletedItems] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
-
-  console.log("Habits in YourDay", habitsState);
-  console.log("Tasks in YourDay", tasksState);
 
   useEffect(() => {
     setHabitsState(habits); // Update state when props change
@@ -53,6 +53,7 @@ export default function YourDay({
   const handleHabitStatusChange = (updatedHabits: any[]) => {
     setHabitsState(updatedHabits); // Update the habits state
     calculateProgress(updatedHabits, tasksState); // Recalculate progress with updated habits
+    onHabitUpdate(updatedHabits); // Pass the updated habits array back to the parent component
   };
 
   const handleTaskStatusChange = (updatedTasks: any[]) => {
@@ -69,12 +70,14 @@ export default function YourDay({
       />
       <div className="flex flex-col md:flex-row gap-8">
         <HabitsSection
+          goals={goals}
           habits={habitsState}
           loading={loading}
           error={error}
           onHabitStatusChange={handleHabitStatusChange} // Pass the callback function here
         />
         <TasksSection
+          goals={goals}
           tasks={tasksState}
           loading={loading}
           error={error}

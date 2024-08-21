@@ -14,6 +14,7 @@ type Task = {
 };
 
 type TasksSectionProps = {
+  goals: any[];
   tasks: Task[];
   loading: boolean;
   error: string | null;

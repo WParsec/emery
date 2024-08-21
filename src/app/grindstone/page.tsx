@@ -17,17 +17,30 @@ export default function Grindstone() {
   const router = useRouter();
 
   // Fetch user data
-  const { habits, goals, tasks, habitLogs, loading, error } =
-    useFetchUserData();
+  const {
+    habits: initialHabits,
+    goals,
+    tasks,
+    habitLogs,
+    loading,
+    error,
+  } = useFetchUserData();
 
-  console.log("Habits in Page:", habits);
-  console.log("Tasks in Page:", tasks);
+  const [habits, setHabits] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (initialHabits && initialHabits.length > 0) {
+      setHabits(initialHabits);
+    }
+  }, [initialHabits]);
+
+  const handleHabitUpdate = (updatedHabits: any[]) => {
+    setHabits(updatedHabits);
+  };
 
   // Get the user's display name and route if not logged in
   useEffect(() => {
-    if (user) {
-      console.log("User:", user);
-    } else {
+    if (!user) {
       router.push("/");
     }
   }, [user, router]);
@@ -51,6 +64,7 @@ export default function Grindstone() {
         error={error}
         habitLogs={habitLogs}
         tasks={tasks}
+        onHabitUpdate={handleHabitUpdate}
       />
       <GoalsSection goals={goals} loading={loading} error={error} />
     </div>

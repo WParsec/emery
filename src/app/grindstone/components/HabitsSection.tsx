@@ -9,6 +9,7 @@ import useUpdateHabitStatus from "@/hooks/useUpdateHabitStatus";
 // Modal
 import Modal from "@/components/modal/Modal";
 import NewHabitForm from "@/components/forms/NewHabitForm";
+import useAddHabit from "@/hooks/useAddHabit";
 
 type Habit = {
   id: string;
@@ -18,6 +19,7 @@ type Habit = {
 };
 
 type HabitsSectionProps = {
+  goals: any[];
   habits: Habit[];
   loading: boolean;
   error: string | null;
@@ -25,6 +27,7 @@ type HabitsSectionProps = {
 };
 
 export default function HabitsSection({
+  goals,
   habits: initialHabits,
   loading,
   error,
@@ -32,8 +35,7 @@ export default function HabitsSection({
 }: HabitsSectionProps) {
   const [habits, setHabits] = useState<Habit[]>(initialHabits);
   const router = useRouter();
-
-  console.log("Habits:", initialHabits);
+  const { addHabit } = useAddHabit();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -44,6 +46,24 @@ export default function HabitsSection({
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleSubmit = async (habit: any) => {
+    console.log("Submitting habit:", habit);
+    const newHabit = await addHabit(habit);
+
+    if (newHabit && newHabit.length > 0) {
+      // Ensure newHabit contains data
+      console.log("New habit added in HabitsSection:", newHabit[0]);
+
+      const updatedHabits = [...habits, newHabit[0]]; // newHabit is an array, so we access the first element
+      setHabits(updatedHabits);
+      onHabitStatusChange(updatedHabits);
+    } else {
+      console.log("Failed to add habit", newHabit);
+    }
+
+    handleCloseModal(); // Close the modal
   };
 
   const {
@@ -115,8 +135,11 @@ export default function HabitsSection({
       )}
 
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} title="Add Habit">
-        {/* Modal Content goes here */}
-        <NewHabitForm onSubmit={() => {}} onCancel={handleCloseModal} />
+        <NewHabitForm
+          onSubmit={handleSubmit}
+          onCancel={handleCloseModal}
+          goals={goals}
+        />
       </Modal>
     </div>
   );

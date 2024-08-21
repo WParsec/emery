@@ -11,7 +11,6 @@ export const useLogout = () => {
     if (user) {
       try {
         await signOut(auth);
-        console.log("User signed out");
         router.push("/"); // Redirect to home page or login page after logout
       } catch (error) {
         console.error("Error signing out:", error);
