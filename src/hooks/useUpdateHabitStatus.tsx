@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "@/utils/supabaseClient"; // Adjust the path as needed
+import { supabase } from "@/utils/supabaseClient";
 
 export default function useUpdateHabitStatus() {
   const [loading, setLoading] = useState(false);

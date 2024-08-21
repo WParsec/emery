@@ -15,6 +15,7 @@ type YourDayProps = {
   loading: boolean;
   error: string | null;
   onHabitUpdate: (updatedHabits: any[]) => void;
+  onTaskUpdate: (updatedTasks: any[]) => void;
 };
 
 export default function YourDay({
@@ -25,6 +26,7 @@ export default function YourDay({
   loading,
   error,
   onHabitUpdate,
+  onTaskUpdate,
 }: YourDayProps) {
   const [habitsState, setHabitsState] = useState<any[]>(habits);
   const [tasksState, setTasksState] = useState<any[]>(tasks);
@@ -59,6 +61,7 @@ export default function YourDay({
   const handleTaskStatusChange = (updatedTasks: any[]) => {
     setTasksState(updatedTasks); // Update the tasks state
     calculateProgress(habitsState, updatedTasks); // Recalculate progress with updated tasks
+    onTaskUpdate(updatedTasks); // Pass the updated tasks array back to the parent component
   };
 
   return (

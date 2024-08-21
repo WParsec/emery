@@ -5,6 +5,9 @@ import ButtonTransparent from "@/components/ButtonTransparent";
 import { format } from "date-fns";
 import useUpdateTaskStatus from "@/hooks/useUpdateTaskStatus";
 import { TaskToggle } from "@/components/ToggleSwitch";
+import Modal from "@/components/modal/Modal";
+import NewTaskForm from "@/components/forms/NewTaskForm"; // Create this form component
+import useAddTask from "@/hooks/useAddTask"; // Import the useAddTask hook
 
 type Task = {
   id: string;
@@ -18,16 +21,19 @@ type TasksSectionProps = {
   tasks: Task[];
   loading: boolean;
   error: string | null;
-  onTaskStatusChange: (updatedTasks: Task[]) => void; // Callback function to pass the updated tasks
+  onTaskStatusChange: (updatedTasks: Task[]) => void;
 };
 
 export default function TasksSection({
+  goals,
   tasks: initialTasks,
   loading,
   error,
   onTaskStatusChange,
 }: TasksSectionProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { addTask } = useAddTask();
   const router = useRouter();
   const {
     updateTaskStatus,
@@ -53,15 +59,35 @@ export default function TasksSection({
         task.id === taskId ? { ...task, completed } : task
       );
       setTasks(updatedTasks);
-      onTaskStatusChange(updatedTasks); // Pass the updated tasks array back to the parent component
+      onTaskStatusChange(updatedTasks);
     } catch (error) {
       console.error("Failed to update task status:", error);
-      // Show error to user
     }
   };
 
   const handleAddTask = () => {
-    console.log("Add task");
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSubmit = async (task: any) => {
+    console.log("Submitting task:", task);
+    const newTask = await addTask(task);
+
+    if (newTask && newTask.length > 0) {
+      console.log("New task added in TasksSection:", newTask[0]);
+
+      const updatedTasks = [...tasks, newTask[0]];
+      setTasks(updatedTasks);
+      onTaskStatusChange(updatedTasks);
+    } else {
+      console.log("Failed to add task", newTask);
+    }
+
+    handleCloseModal(); // Close the modal
   };
 
   return (
@@ -102,6 +128,14 @@ export default function TasksSection({
       ) : (
         <div>No tasks for today!</div>
       )}
+
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title="Add Task">
+        <NewTaskForm
+          onSubmit={handleSubmit}
+          onCancel={handleCloseModal}
+          goals={goals}
+        />
+      </Modal>
     </div>
   );
 }
