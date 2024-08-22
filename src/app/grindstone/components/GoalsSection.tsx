@@ -14,6 +14,8 @@ type Goal = {
   connectedHabit?: string; // Optional field for connected habit
   start_date: string; // Corrected to match your data structure
   end_date: string; // Corrected to match your data structure
+  milestone_count: number; // Corrected to match your data structure
+  completed_milestones: number; // Corrected to match your data structure
 };
 
 type GoalsSectionProps = {
@@ -36,6 +38,8 @@ export default function GoalsSection({
   useEffect(() => {
     setGoals(initialGoals);
   }, [initialGoals]);
+
+  console.log("Goals in GoalsSection:", goals);
 
   const handleGoalClick = (goalId: string) => {
     router.push(`/goal/${goalId}`);
@@ -66,21 +70,6 @@ export default function GoalsSection({
     newGoal && newGoal.length > 0 && router.push(`/goal/${newGoal[0].id}`);
   };
 
-  // // Calculate the percentage of time passed
-  // const calculateTimePercentage = (start_date: string, end_date: string) => {
-  //   const start = new Date(start_date).getTime();
-  //   const end = new Date(end_date).getTime();
-  //   const now = new Date().getTime();
-
-  //   if (now < start) return 0;
-  //   if (now > end) return 100;
-
-  //   const totalDuration = end - start;
-  //   const timePassed = now - start;
-
-  //   return (timePassed / totalDuration) * 100;
-  // };
-
   return (
     <div className="w-full rounded-lg">
       <div className="flex justify-between items-center mb-4">
@@ -100,7 +89,7 @@ export default function GoalsSection({
               {/* Left Section: Name and Connected Habit */}
               <div className="w-full md:w-1/2 flex flex-col justify-center">
                 <p className="text-sm">{goal.name}</p>
-                <p className="text-xs">
+                <p className="text-xs text-silver">
                   Connected habit: {goal.connectedHabit || "None"}
                 </p>
               </div>
@@ -110,12 +99,23 @@ export default function GoalsSection({
                 {/* Progress Bar */}
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs">Progress:</p>
-                  <div className="relative w-1/2 md:w-3/4 h-1 bg-black rounded-full">
-                    <div
-                      className="absolute top-0 left-0 h-full bg-green rounded-full"
-                      style={{ width: "50%" }} // Example progress percentage
-                    ></div>
-                  </div>
+                  {goal.milestone_count > 0 ? (
+                    <div className="relative w-1/2 md:w-3/4 h-1 bg-black rounded-full">
+                      <div
+                        className="absolute top-0 left-0 h-full bg-green rounded-full"
+                        style={{
+                          width: `${
+                            (goal.completed_milestones / goal.milestone_count) *
+                            100
+                          }%`,
+                        }} // Example progress percentage
+                      ></div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-silver">
+                      Add milestones to track progress
+                    </p>
+                  )}
                 </div>
 
                 {/* Time Remaining Bar */}

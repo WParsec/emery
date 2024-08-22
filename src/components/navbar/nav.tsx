@@ -60,7 +60,12 @@ export default function Navbar() {
               />
             </li>
             <li>
-              <LinkButton title="Goals" route="/goals" disabled={!isLoggedIn} />
+              <LinkButton
+                title="Goals"
+                route="/goals"
+                disabled={!isLoggedIn}
+                active={pathname.startsWith("/goals")}
+              />
             </li>
             <li>
               <LinkButton title="Tasks" route="/tasks" disabled={!isLoggedIn} />
@@ -70,7 +75,7 @@ export default function Navbar() {
                 title="Habits"
                 route="/habits"
                 disabled={!isLoggedIn}
-                active={pathname.startsWith("/goals")}
+                active={pathname.startsWith("/habits")}
               />
             </li>
             <li>

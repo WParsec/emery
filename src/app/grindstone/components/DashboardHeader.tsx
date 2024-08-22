@@ -7,6 +7,7 @@ import CoalImage from "@/assets/images/coal.png";
 import { useCurrentDate } from "@/utils/useCurrentDate";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Categories from "@/components/Categories";
 
 type DashboardHeaderProps = {
   user: any;
@@ -74,22 +75,7 @@ export default function DashboardHeader({
         </div>
 
         {/* Categories */}
-        {categories && (
-          <div>
-            <h2 className="text-md font-bold mb-4">Categories</h2>
-            <div className="pb-0 flex gap-4 flex-wrap md:pb-4">
-              {categories.map((category) => (
-                <Link
-                  href={`/category/${category}`}
-                  key={category}
-                  className="bg-card-bg transition-colors w-20 h-20 rounded-lg p-2 text-xs flex items-center text-center justify-center cursor-pointer hover:bg-lighter-black"
-                >
-                  {category}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        {categories && <Categories categories={categories} />}
       </div>
 
       {/* Right Section: Coal Image and Motivational Quote */}
