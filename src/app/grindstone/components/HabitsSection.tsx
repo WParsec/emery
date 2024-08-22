@@ -119,7 +119,7 @@ export default function HabitsSection({
                 <p className="text-xs">
                   Interval: {habit.times_per_week} days/week
                 </p>
-                <p className="text-xs">Remaining this week: </p>
+                {/* <p className="text-xs">Remaining this week: </p> */}
               </div>
               <HabitToggle
                 habit={habit}

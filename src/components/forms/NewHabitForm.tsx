@@ -122,7 +122,7 @@ export default function HabitForm({
             <select
               value={timesPerWeek}
               onChange={handleTimesPerWeekChange}
-              className="w-full h-10 py-2 rounded bg-black-main"
+              className="w-full h-10 py-2 rounded bg-black-main px-4"
               disabled={daily} // Disable the select if the daily habit is checked
               required
             >
@@ -151,7 +151,7 @@ export default function HabitForm({
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-full h-10 py-2 rounded bg-black-main"
+            className="w-full h-10 py-2 rounded bg-black-main px-4"
             required
           />
         </div>
@@ -162,7 +162,7 @@ export default function HabitForm({
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="w-full h-10 py-2 rounded bg-black-main"
+            className="w-full h-10 py-2 rounded bg-black-main px-4"
             required
           />
         </div>
@@ -172,7 +172,7 @@ export default function HabitForm({
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full h-10 py-2 rounded bg-black-main"
+            className="w-full h-10 py-2 rounded bg-black-main px-4"
           >
             <option value="General">General</option>
             <option value="Health">Health</option>
@@ -190,7 +190,7 @@ export default function HabitForm({
             <select
               value={goalId}
               onChange={(e) => setGoalId(e.target.value)}
-              className="w-full h-10 py-2 rounded bg-black-main"
+              className="w-full h-10 py-2 rounded bg-black-main px-4"
             >
               <option value="">Select a goal</option> {/* Default option */}
               {goals.map((goal) => (

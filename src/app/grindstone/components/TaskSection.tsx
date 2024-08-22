@@ -93,7 +93,7 @@ export default function TasksSection({
   return (
     <div className="w-full md:w-1/2 rounded-lg">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-sm font-medium">Single Tasks</h3>
+        <h3 className="text-sm font-medium">Tasks</h3>
         <ButtonTransparent handleClick={handleAddTask} title={"Add Task"} />
       </div>
       {error ? <div>{error}</div> : null}
@@ -107,13 +107,16 @@ export default function TasksSection({
               className={`${
                 task.completed
                   ? "bg-gradient-to-r from-dark-turquoise to-green"
-                  : "bg-warning-orange"
+                  : "bg-card-bg"
               } transition-all duration-300 flex justify-between items-center mb-4 p-4 rounded-lg cursor-pointer`}
             >
               <div>
                 <p className="text-sm">{task.name}</p>
                 <p className={`text-xs`}>
-                  Expires: {task.due_date === today ? "Today" : "Tomorrow"}
+                  Expires:{" "}
+                  <span className="text-warning-text">
+                    {task.due_date === today ? "Today" : `${task.due_date}`}
+                  </span>
                 </p>
               </div>
               <TaskToggle

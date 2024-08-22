@@ -3,6 +3,10 @@ import { useRouter } from "next/navigation";
 // components
 import ButtonTransparent from "@/components/ButtonTransparent";
 import TimeProgressBar from "@/components/TimeProgressBar";
+// modal
+import Modal from "@/components/modal/Modal";
+import NewGoalForm from "@/components/forms/NewGoalForm";
+import useAddGoal from "@/hooks/useAddGoal"; // Import your useAddGoal hook
 
 type Goal = {
   id: string;
@@ -24,7 +28,9 @@ export default function GoalsSection({
   error,
 }: GoalsSectionProps) {
   const [goals, setGoals] = useState<Goal[]>(initialGoals);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
+  const { addGoal } = useAddGoal(); // Add the useAddGoal hook
 
   // Use useEffect to update goals state when initialGoals prop changes
   useEffect(() => {
@@ -37,22 +43,43 @@ export default function GoalsSection({
 
   const handleAddGoal = () => {
     console.log("Add Goal");
+    setIsModalOpen(true);
   };
 
-  // Calculate the percentage of time passed
-  const calculateTimePercentage = (start_date: string, end_date: string) => {
-    const start = new Date(start_date).getTime();
-    const end = new Date(end_date).getTime();
-    const now = new Date().getTime();
-
-    if (now < start) return 0;
-    if (now > end) return 100;
-
-    const totalDuration = end - start;
-    const timePassed = now - start;
-
-    return (timePassed / totalDuration) * 100;
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
+
+  const handleSubmit = async (goal: any) => {
+    console.log("Submitting goal:", goal);
+    const newGoal = await addGoal(goal);
+
+    if (newGoal && newGoal.length > 0) {
+      console.log("New goal added in GoalsSection:", newGoal[0]);
+      const updatedGoals = [...goals, newGoal[0]];
+      setGoals(updatedGoals);
+    } else {
+      console.log("Failed to add goal", newGoal);
+    }
+
+    handleCloseModal();
+    newGoal && newGoal.length > 0 && router.push(`/goal/${newGoal[0].id}`);
+  };
+
+  // // Calculate the percentage of time passed
+  // const calculateTimePercentage = (start_date: string, end_date: string) => {
+  //   const start = new Date(start_date).getTime();
+  //   const end = new Date(end_date).getTime();
+  //   const now = new Date().getTime();
+
+  //   if (now < start) return 0;
+  //   if (now > end) return 100;
+
+  //   const totalDuration = end - start;
+  //   const timePassed = now - start;
+
+  //   return (timePassed / totalDuration) * 100;
+  // };
 
   return (
     <div className="w-full rounded-lg">
@@ -103,6 +130,10 @@ export default function GoalsSection({
       ) : (
         <div>No goals yet.</div>
       )}
+
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title="Add Goal">
+        <NewGoalForm onSubmit={handleSubmit} onCancel={handleCloseModal} />
+      </Modal>
     </div>
   );
 }

@@ -153,7 +153,7 @@ export default function NewTaskForm({
           />
           <Button
             onClick={() => {}}
-            title="Save Habit"
+            title="Save Task"
             bgColor="bg-gradient-to-r from-dark-turquoise to-green"
           />
         </div>

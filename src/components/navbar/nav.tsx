@@ -63,6 +63,9 @@ export default function Navbar() {
               <LinkButton title="Goals" route="/goals" disabled={!isLoggedIn} />
             </li>
             <li>
+              <LinkButton title="Tasks" route="/tasks" disabled={!isLoggedIn} />
+            </li>
+            <li>
               <LinkButton
                 title="Habits"
                 route="/habits"

@@ -16,6 +16,7 @@ module.exports = {
         "dark-turquoise": "#005750", // Dark turquoise
         "warning-orange": "#917144", // Warning orange
         "warning-red": "#914444", // Warning red
+        "warning-text": "#d1a05c", // Warning text
       },
     },
   },
