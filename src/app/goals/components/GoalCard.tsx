@@ -5,9 +5,14 @@ import ButtonTransparent from "@/components/ButtonTransparent";
 type GoalCardProps = {
   goal: any;
   handleGoalClick: (id: string) => void;
+  handleMilestoneClick: (goal: any) => void; // Add milestone click handler
 };
 
-const GoalCard = ({ goal, handleGoalClick }: GoalCardProps) => {
+const GoalCard = ({
+  goal,
+  handleGoalClick,
+  handleMilestoneClick,
+}: GoalCardProps) => {
   // Calculate the percentage of completed milestones
   const progressPercentage =
     goal.milestone_count > 0
@@ -45,7 +50,7 @@ const GoalCard = ({ goal, handleGoalClick }: GoalCardProps) => {
           ) : (
             <ButtonTransparent
               title="Add Milestones to track progress"
-              handleClick={() => {}}
+              handleClick={() => handleMilestoneClick(goal)}
             />
           )}
         </div>

@@ -6,8 +6,9 @@ import { format } from "date-fns";
 import useUpdateTaskStatus from "@/hooks/useUpdateTaskStatus";
 import { TaskToggle } from "@/components/ToggleSwitch";
 import Modal from "@/components/modal/Modal";
-import NewTaskForm from "@/components/forms/NewTaskForm"; // Create this form component
-import useAddTask from "@/hooks/useAddTask"; // Import the useAddTask hook
+import NewTaskForm from "@/components/forms/NewTaskForm";
+import useAddTask from "@/hooks/useAddTask";
+import Link from "next/link";
 
 type Task = {
   id: string;
@@ -41,11 +42,13 @@ export default function TasksSection({
     error: updateError,
   } = useUpdateTaskStatus();
 
-  useEffect(() => {
-    setTasks(initialTasks);
-  }, [initialTasks]);
-
   const today = format(new Date(), "yyyy-MM-dd");
+
+  useEffect(() => {
+    // Filter tasks to only include those that expire today
+    const todayTasks = initialTasks.filter((task) => task.due_date === today);
+    setTasks(todayTasks);
+  }, [initialTasks, today]);
 
   const handleTaskClick = (taskId: string) => {
     router.push(`/task/${taskId}`);
@@ -80,9 +83,12 @@ export default function TasksSection({
     if (newTask && newTask.length > 0) {
       console.log("New task added in TasksSection:", newTask[0]);
 
-      const updatedTasks = [...tasks, newTask[0]];
-      setTasks(updatedTasks);
-      onTaskStatusChange(updatedTasks);
+      // Add the new task only if it expires today
+      if (newTask[0].due_date === today) {
+        const updatedTasks = [...tasks, newTask[0]];
+        setTasks(updatedTasks);
+        onTaskStatusChange(updatedTasks);
+      }
     } else {
       console.log("Failed to add task", newTask);
     }
@@ -129,7 +135,12 @@ export default function TasksSection({
           ))}
         </div>
       ) : (
-        <div>No tasks for today!</div>
+        <div className="flex justify-between items-center text-sm">
+          <p>No tasks expires today!</p>
+          <Link href="/tasks" className="p-4">
+            View All
+          </Link>
+        </div>
       )}
 
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} title="Add Task">

@@ -92,7 +92,7 @@ export default function NewTaskForm({
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="w-full h-10 py-2 rounded bg-black-main"
+            className="w-full h-10 py-2 rounded bg-black-main px-4"
             required
           />
         </div>
@@ -102,7 +102,7 @@ export default function NewTaskForm({
           <select
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
-            className="w-full h-10 py-2 rounded bg-black-main"
+            className="w-full h-10 py-2 rounded bg-black-main px-4"
           >
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -115,7 +115,7 @@ export default function NewTaskForm({
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full h-10 py-2 rounded bg-black-main"
+            className="w-full h-10 py-2 rounded bg-black-main px-4"
           >
             <option value="General">General</option>
             <option value="Health">Health</option>
@@ -133,7 +133,7 @@ export default function NewTaskForm({
             <select
               value={goalId}
               onChange={(e) => setGoalId(e.target.value)}
-              className="w-full h-10 py-2 rounded bg-black-main"
+              className="w-full h-10 py-2 px-4 rounded bg-black-main"
             >
               <option value="">Select a goal</option>
               {goals.map((goal) => (

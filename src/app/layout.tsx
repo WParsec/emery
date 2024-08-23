@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
           <MuiWrapper>
-            <header className="p-4">
+            <header className="py-4">
               <div className="container mx-auto flex justify-between items-center">
                 <Navbar />
               </div>

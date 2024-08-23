@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/utils/supabaseClient";
+import { useAuth } from "@/context/AuthContext"; // Import your useAuth hook
 
 // Define the Goal type
 type Goal = {
@@ -17,11 +18,20 @@ export default function useFetchGoals() {
   const [goals, setGoals] = useState<Goal[]>([]); // Specify the Goal[] type
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null); // Specify the error type
+  const user = useAuth(); // Get the user from the auth context
 
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        const { data, error } = await supabase.from("goals").select("*");
+        if (!user || !user.uid) {
+          setError("User not logged in");
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("goals")
+          .select("*")
+          .eq("user_id", user.uid); // Filter by user_id
 
         // Handle error from Supabase
         if (error) {
@@ -36,8 +46,9 @@ export default function useFetchGoals() {
           return;
         }
 
-        // Update state with fetched data
-        setGoals(data as Goal[]); // Cast the data to Goal[]
+        // Update state with fetched data and clear any previous errors
+        setGoals(data as Goal[]);
+        setError(null); // Clear the error state
       } catch (err: any) {
         // Handle any unexpected errors
         console.error("Unexpected error:", err.message);
@@ -48,7 +59,7 @@ export default function useFetchGoals() {
     };
 
     fetchGoals();
-  }, []);
+  }, [user]); // Dependency array includes user to refetch goals if user changes
 
   return { goals, loading, error };
 }

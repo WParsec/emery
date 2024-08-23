@@ -27,12 +27,12 @@ export default function useFetchUserData() {
 
         if (habitsError) throw habitsError;
 
-        // Fetch tasks
+        // Fetch tasks for today
         const { data: tasksData, error: tasksError } = await supabase
           .from("tasks")
           .select("*")
           .eq("user_id", user.uid)
-          .gte("due_date", today);
+          .eq("due_date", today); // Only fetch tasks due today
 
         if (tasksError) throw tasksError;
 
@@ -60,7 +60,7 @@ export default function useFetchUserData() {
 
         // Set data
         setHabits(habitsData || []);
-        setTasks(tasksData || []);
+        setTasks(tasksData || []); // Only tasks due today
         setGoals(goalsData || []);
         setHabitLogs(habitLogsData || []);
       } catch (error: any) {
