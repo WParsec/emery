@@ -28,6 +28,7 @@ export default function Grindstone() {
 
   const [habits, setHabits] = useState<any[]>([]);
   const [tasks, setTasks] = useState<any[]>([]);
+  console.log(user);
 
   useEffect(() => {
     if (initialHabits && initialHabits.length > 0) {

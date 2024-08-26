@@ -99,7 +99,7 @@ export default function TasksSection({
   return (
     <div className="w-full md:w-1/2 rounded-lg">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-sm font-medium">Tasks</h3>
+        <h3 className="font-bold">Tasks</h3>
         <ButtonTransparent handleClick={handleAddTask} title={"Add Task"} />
       </div>
       {error ? <div>{error}</div> : null}

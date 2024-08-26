@@ -94,7 +94,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             value={name}
             onChange={handleNameChange}
             className="w-full px-3 py-2 rounded"
-            placeholder="Vhaegar"
+            placeholder="Daenerys"
           />
           {localValidationErrors.name && (
             <p className="text-warning-red text-sm">
@@ -109,7 +109,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             value={email}
             onChange={handleEmailChange}
             className="w-full px-3 py-2 rounded"
-            placeholder="vhaegar@targaryan.wes"
+            placeholder="daenerys@targaryan.wes"
           />
           {localValidationErrors.email && (
             <p className="text-warning-red text-sm">

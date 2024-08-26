@@ -25,6 +25,7 @@ export async function registerUser(
   // Store user details in Supabase
   await addUserToDatabase(user.uid, email, name);
 
+  await user.reload();
   return user;
 }
 

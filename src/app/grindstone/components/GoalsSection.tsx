@@ -73,7 +73,7 @@ export default function GoalsSection({
   return (
     <div className="w-full rounded-lg">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-sm font-medium">Goals</h3>
+        <h3 className="font-bold">Goals</h3>
         <ButtonTransparent handleClick={handleAddGoal} title={"New Goal"} />
       </div>
       {error ? <div>{error}</div> : null}
@@ -128,7 +128,7 @@ export default function GoalsSection({
           ))}
         </div>
       ) : (
-        <div>No goals yet.</div>
+        <div className="text-sm">No goals yet.</div>
       )}
 
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} title="Add Goal">

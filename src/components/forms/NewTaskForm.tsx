@@ -122,6 +122,7 @@ export default function NewTaskForm({
             <option value="Productivity">Productivity</option>
             <option value="Learning">Learning</option>
             <option value="Work">Work</option>
+            <option value="Finance">Finance</option>
           </select>
         </div>
 

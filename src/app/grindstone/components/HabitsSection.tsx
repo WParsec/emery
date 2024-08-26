@@ -97,7 +97,7 @@ export default function HabitsSection({
   return (
     <div className="w-full md:w-1/2 rounded-lg">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-sm font-medium">Habits</h3>
+        <h3 className="font-bold">Habits</h3>
         <ButtonTransparent handleClick={handleAddHabit} title={"Add Habit"} />
       </div>
       {error ? <div>{error}</div> : null}
@@ -131,7 +131,7 @@ export default function HabitsSection({
           ))}
         </div>
       ) : (
-        <div>No habits yet.</div>
+        <div className="text-sm">No habits yet.</div>
       )}
 
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} title="Add Habit">
