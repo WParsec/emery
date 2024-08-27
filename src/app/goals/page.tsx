@@ -88,7 +88,7 @@ export default function GoalsPage() {
   };
 
   const handleGoalClick = (goalId: string) => {
-    route.push(`/goal/${goalId}`);
+    route.push(`/goals/${goalId}`);
   };
 
   // Extract unique categories from the goals
@@ -97,7 +97,7 @@ export default function GoalsPage() {
   );
 
   return (
-    <div className="p-4">
+    <div className="p-4 container">
       <GoalsHeader />
       <SecondHeader
         handleSort={handleSort}
