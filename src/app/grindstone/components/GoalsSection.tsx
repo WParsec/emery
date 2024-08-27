@@ -67,7 +67,7 @@ export default function GoalsSection({
     }
 
     handleCloseModal();
-    newGoal && newGoal.length > 0 && router.push(`/goal/${newGoal[0].id}`);
+    newGoal && newGoal.length > 0 && router.push(`/goals/${newGoal[0].id}`);
   };
 
   return (
