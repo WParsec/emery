@@ -42,7 +42,7 @@ export default function GoalsSection({
   console.log("Goals in GoalsSection:", goals);
 
   const handleGoalClick = (goalId: string) => {
-    router.push(`/goal/${goalId}`);
+    router.push(`/goals/${goalId}`);
   };
 
   const handleAddGoal = () => {

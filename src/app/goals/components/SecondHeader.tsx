@@ -5,6 +5,7 @@ type SortingAndNewGoalProps = {
   handleSort: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleAddGoal: () => void;
   categories: string[];
+  filter?: boolean;
 };
 
 const SecondHeader = ({
