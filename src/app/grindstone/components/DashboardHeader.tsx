@@ -6,7 +6,6 @@ import Image from "next/image";
 import CoalImage from "@/assets/images/coal.png";
 import { useCurrentDate } from "@/utils/useCurrentDate";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Categories from "@/components/Categories";
 
 type DashboardHeaderProps = {
@@ -42,6 +41,8 @@ export default function DashboardHeader({
   useEffect(() => {
     if (user && user.displayName) {
       setDisplayName(user.displayName);
+      console.log("User in DashboardHeader:", user);
+      console.log(displayName);
     }
   }, [user]);
 

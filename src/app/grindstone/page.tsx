@@ -13,8 +13,12 @@ import GoalsSection from "./components/GoalsSection";
 import useFetchUserData from "@/hooks/useFetchUserData";
 
 export default function Grindstone() {
-  const user = useAuth();
+  const authUser = useAuth();
   const router = useRouter();
+
+  // State to manage user loading state
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [userState, setUserState] = useState<any>(null);
 
   // Fetch user data
   const {
@@ -28,7 +32,6 @@ export default function Grindstone() {
 
   const [habits, setHabits] = useState<any[]>([]);
   const [tasks, setTasks] = useState<any[]>([]);
-  console.log(user);
 
   useEffect(() => {
     if (initialHabits && initialHabits.length > 0) {
@@ -47,21 +50,47 @@ export default function Grindstone() {
     setTasks(updatedTasks);
   };
 
-  // Get the user's display name and route if not logged in
+  // Set user state and handle displayName loading
   useEffect(() => {
-    if (!user) {
+    if (authUser) {
+      setUserState(authUser);
+
+      // Check if the displayName is already set
+      if (authUser.displayName) {
+        setLoadingUser(false); // Stop loading if displayName is available
+      } else {
+        // Poll until displayName is available
+        const checkDisplayName = setInterval(() => {
+          if (authUser.displayName) {
+            setLoadingUser(false); // Stop loading once displayName is set
+            clearInterval(checkDisplayName); // Clear interval to stop polling
+          }
+        }, 100); // Check every 100ms
+      }
+    } else {
+      setLoadingUser(false);
+    }
+  }, [authUser]);
+
+  // Redirect to home page if user is not logged in
+  useEffect(() => {
+    if (!authUser && !loadingUser) {
       router.push("/");
     }
-  }, [user, router]);
+  }, [authUser, loadingUser, router]);
 
-  if (!user) {
+  if (loadingUser) {
+    return <div>Loading user information...</div>; // Show loading state while waiting for displayName
+  }
+
+  if (!authUser) {
     return <div>Redirecting...</div>;
   }
 
   return (
     <div className="p-4 flex flex-col gap-8">
       <DashboardHeader
-        user={user}
+        user={userState}
         habits={habits}
         goals={goals}
         loading={loading}
