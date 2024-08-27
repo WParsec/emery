@@ -87,6 +87,10 @@ export default function GoalsPage() {
     }
   };
 
+  const handleGoalClick = (goalId: string) => {
+    route.push(`/goal/${goalId}`);
+  };
+
   // Extract unique categories from the goals
   const categories = Array.from(
     new Set(goals.map((goal: Goal) => goal.category))
@@ -107,7 +111,9 @@ export default function GoalsPage() {
           <GoalCard
             key={goal.id}
             goal={goal}
-            handleGoalClick={() => {}}
+            handleGoalClick={() => {
+              handleGoalClick(goal.id);
+            }}
             handleMilestoneClick={() => handleMilestoneClick(goal)} // Pass the goal to handleMilestoneClick
           />
         ))
