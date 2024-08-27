@@ -12,6 +12,8 @@ import useAddMilestone from "@/hooks/useAddMilestone";
 import useFetchMilestones from "@/hooks/useFetchMilestones";
 import useUpdateMilestoneStatus from "@/hooks/useUpdateMilestoneStatus";
 import { MilestoneToggle } from "@/components/ToggleSwitch";
+import HabitToggle from "@/components/ToggleSwitch";
+import useFetchConnectedHabits from "@/hooks/useFetchConnectedHabits";
 
 type Goal = {
   id: string;
@@ -33,15 +35,27 @@ type Milestones = {
   completed: boolean;
 };
 
+type Habits = {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  start_date: string;
+  end_date: string;
+  completed: boolean;
+};
+
 export default function GoalPage() {
   const { id: goalId } = useParams(); // Extract goal ID from the URL
   const [goal, setGoal] = useState<Goal>(); // Store the goal data
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [milestones, setMilestones] = useState<Milestones[]>([]); // Manage milestones state
+  const [milestones, setMilestones] = useState<Milestones[]>([]);
+  const [habits, setHabits] = useState<Habits[]>([]);
   const { addMilestone } = useAddMilestone();
   const { milestones: initialMilestones } = useFetchMilestones(
     goalId as string
   );
+  const { habits: initialHabits } = useFetchConnectedHabits(goalId as string);
   const {
     updateMilestoneStatus,
     loading: updateLoading,
@@ -50,7 +64,8 @@ export default function GoalPage() {
 
   useEffect(() => {
     setMilestones(initialMilestones);
-  }, [initialMilestones]);
+    setHabits(initialHabits);
+  }, [initialMilestones, initialHabits]);
 
   useEffect(() => {
     // Fetch the goal data by ID
@@ -116,6 +131,7 @@ export default function GoalPage() {
   }
 
   console.log(milestones);
+  console.log("habits", habits);
 
   return (
     <div className="p-4 container">
@@ -131,36 +147,67 @@ export default function GoalPage() {
         <p className="text-sm">{goal.description}</p>
       </div>
 
-      <div className="py-4">
-        <h2 className="font-bold mb-2">Milestones:</h2>
-        {milestones.map((milestone) => (
-          <div key={milestone.id} className="flex items-center gap-4">
-            <div
-              className={`flex-1 flex justify-between p-4 my-2 bg-card-bg rounded-lg ${
-                milestone.completed
-                  ? "bg-gradient-to-r from-dark-turquoise to-green"
-                  : "bg-card-bg"
-              }`}
-            >
-              <div>
-                <p className="text-sm">{milestone.name}</p>
-                {milestone.description && (
-                  <p className="text-xs">{milestone.description}</p>
-                )}
-                <p className="text-xs">
-                  Completed: {milestone.completed ? "Yes" : "No"}
-                </p>
+      <div className="py-4 flex flex-col md:flex-row gap-4">
+        <div className="w-full md:w-1/2">
+          <h2 className="font-bold mb-2">Milestones:</h2>
+          {milestones.map((milestone) => (
+            <div key={milestone.id} className="flex items-center gap-4">
+              <div
+                className={`flex-1 flex justify-between p-4 my-2 bg-card-bg rounded-lg ${
+                  milestone.completed
+                    ? "bg-gradient-to-r from-dark-turquoise to-green"
+                    : "bg-card-bg"
+                }`}
+              >
+                <div>
+                  <p className="text-sm">{milestone.name}</p>
+                  {milestone.description && (
+                    <p className="text-xs">{milestone.description}</p>
+                  )}
+                  <p className="text-xs">
+                    Completed: {milestone.completed ? "Yes" : "No"}
+                  </p>
+                </div>
+                <MilestoneToggle
+                  milestone={milestone}
+                  onToggleComplete={handleToggleComplete}
+                  loading={updateLoading}
+                  error={updateError}
+                />
               </div>
-              <MilestoneToggle
-                milestone={milestone}
-                onToggleComplete={handleToggleComplete}
-                loading={updateLoading}
-                error={updateError}
-              />
             </div>
-            <div className="text-sm">Delete</div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="w-full md:w-1/2">
+          <h2 className="font-bold mb-2">Connected Habits:</h2>
+          {habits.map((habit) => (
+            <div key={habit.id} className="flex items-center gap-4">
+              <div
+                className={`flex-1 flex justify-between p-4 my-2 bg-card-bg rounded-lg ${
+                  habit.completed
+                    ? "bg-gradient-to-r from-dark-turquoise to-green"
+                    : "bg-card-bg"
+                }`}
+              >
+                <div>
+                  <p className="text-sm">{habit.name}</p>
+                  {habit.description && (
+                    <p className="text-xs">{habit.description}</p>
+                  )}
+                  <p className="text-xs">
+                    Completed: {habit.completed ? "Yes" : "No"}
+                  </p>
+                </div>
+                <HabitToggle
+                  habit={habit}
+                  onToggleComplete={handleToggleComplete}
+                  loading={updateLoading}
+                  error={updateError}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <Modal
