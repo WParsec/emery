@@ -18,7 +18,7 @@ type TaskToggleProps = {
 };
 
 type GoalToggleProps = {
-  goal: any;
+  goal: { id: string; completed: boolean };
   onToggleComplete: (goalId: string, completed: boolean) => void;
   loading: boolean;
   error: string | null;
@@ -133,10 +133,10 @@ export function GoalToggle({
   const [isCompleted, setIsCompleted] = useState(goal.completed);
 
   const handleToggle = (e: ChangeEvent<HTMLInputElement>) => {
-    e.stopPropagation(); // Prevent the click event from bubbling up to the parent
+    e.stopPropagation();
     const newStatus = e.target.checked;
     setIsCompleted(newStatus);
-    onToggleComplete(goal.id, newStatus); // Pass both the ID and the completed status
+    onToggleComplete(goal.id, newStatus);
   };
 
   return (
@@ -147,10 +147,9 @@ export function GoalToggle({
         color="primary"
         inputProps={{ "aria-label": "goal toggle" }}
         onClick={(e) => e.stopPropagation()}
-        disabled={loading} // Disable the toggle while loading
+        disabled={loading}
       />
-      {error && <p className="text-red-500 text-sm">{error}</p>}{" "}
-      {/* Display error message */}
+      {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
   );
 }

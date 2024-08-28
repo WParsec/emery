@@ -2,8 +2,8 @@ import React from "react";
 import { GoalToggle } from "@/components/ToggleSwitch";
 
 type GoalCompleteProps = {
-  handleComplete: (goal: any) => void;
-  goal: any;
+  handleComplete: (goalId: string, completed: boolean) => void;
+  goal: { id: string; completed: boolean };
   loading: boolean;
   error: string | null;
 };

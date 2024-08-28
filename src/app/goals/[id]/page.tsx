@@ -173,7 +173,6 @@ export default function GoalPage() {
   }
 
   const handleGoalComplete = async (goalId: string, completed: boolean) => {
-    // Update the goal status
     console.log(goalId, completed);
     const { error } = await supabase
       .from("goals")
