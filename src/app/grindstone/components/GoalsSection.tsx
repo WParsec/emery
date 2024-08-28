@@ -6,16 +6,17 @@ import TimeProgressBar from "@/components/TimeProgressBar";
 // modal
 import Modal from "@/components/modal/Modal";
 import NewGoalForm from "@/components/forms/NewGoalForm";
-import useAddGoal from "@/hooks/useAddGoal"; // Import your useAddGoal hook
+import useAddGoal from "@/hooks/useAddGoal";
 
 type Goal = {
   id: string;
   name: string;
-  connectedHabit?: string; // Optional field for connected habit
-  start_date: string; // Corrected to match your data structure
-  end_date: string; // Corrected to match your data structure
-  milestone_count: number; // Corrected to match your data structure
-  completed_milestones: number; // Corrected to match your data structure
+  connectedHabit?: string;
+  start_date: string;
+  end_date: string;
+  milestone_count: number;
+  completed_milestones: number;
+  completed: boolean;
 };
 
 type GoalsSectionProps = {
@@ -84,7 +85,11 @@ export default function GoalsSection({
             <div
               key={goal.id}
               onClick={() => handleGoalClick(goal.id)} // Handle click for the entire goal
-              className="bg-card-bg transition-all duration-300 flex flex-col md:flex-row gap-4 mb-4 p-4 rounded-lg cursor-pointer"
+              className={`${
+                goal.completed
+                  ? "bg-gradient-to-r from-dark-turquoise to-green"
+                  : "bg-card-bg"
+              } transition-all duration-300 flex flex-col md:flex-row gap-4 mb-4 p-4 rounded-lg cursor-pointer`}
             >
               {/* Left Section: Name and Connected Habit */}
               <div className="w-full md:w-1/2 flex flex-col justify-center">

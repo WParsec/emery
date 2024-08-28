@@ -17,6 +17,13 @@ type TaskToggleProps = {
   error: string | null;
 };
 
+type GoalToggleProps = {
+  goal: any;
+  onToggleComplete: (goalId: string, completed: boolean) => void;
+  loading: boolean;
+  error: string | null;
+};
+
 type MilestoneToggleProps = {
   milestone: any;
   onToggleComplete: (milestoneId: string, completed: boolean) => void;
@@ -108,6 +115,37 @@ export function MilestoneToggle({
         onChange={handleToggle}
         color="primary"
         inputProps={{ "aria-label": "milestone toggle" }}
+        onClick={(e) => e.stopPropagation()}
+        disabled={loading} // Disable the toggle while loading
+      />
+      {error && <p className="text-red-500 text-sm">{error}</p>}{" "}
+      {/* Display error message */}
+    </div>
+  );
+}
+
+export function GoalToggle({
+  goal,
+  onToggleComplete,
+  loading,
+  error,
+}: GoalToggleProps) {
+  const [isCompleted, setIsCompleted] = useState(goal.completed);
+
+  const handleToggle = (e: ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation(); // Prevent the click event from bubbling up to the parent
+    const newStatus = e.target.checked;
+    setIsCompleted(newStatus);
+    onToggleComplete(goal.id, newStatus);
+  };
+
+  return (
+    <div>
+      <Switch
+        checked={isCompleted}
+        onChange={handleToggle}
+        color="primary"
+        inputProps={{ "aria-label": "goal toggle" }}
         onClick={(e) => e.stopPropagation()}
         disabled={loading} // Disable the toggle while loading
       />

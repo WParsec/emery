@@ -15,6 +15,7 @@ import HabitCard from "@/components/HabitCard"; // Import HabitCard
 import useFetchConnectedHabits from "@/hooks/useFetchConnectedHabits";
 import useUpdateHabitStatus from "@/hooks/useUpdateHabitStatus";
 import DeleteForm from "@/components/forms/DeleteForm";
+import GoalComplete from "./components/GoalComplete";
 
 type Goal = {
   id: string;
@@ -25,6 +26,7 @@ type Goal = {
   end_date: string;
   milestone_count: number;
   completed_milestones: number;
+  completed: boolean;
 };
 
 type Milestones = {
@@ -47,6 +49,7 @@ export default function GoalPage() {
   const { id: goalId } = useParams(); // Extract goal ID from the URL
   const router = useRouter();
   const [goal, setGoal] = useState<Goal>(); // Store the goal data
+  console.log(goal);
 
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -169,12 +172,32 @@ export default function GoalPage() {
     return <div>Loading...</div>;
   }
 
+  const handleGoalComplete = async (goalId: string, completed: boolean) => {
+    // Update the goal status
+    console.log(goalId, completed);
+    const { error } = await supabase
+      .from("goals")
+      .update({ completed })
+      .eq("id", goalId);
+
+    if (error) {
+      console.error("Error updating goal:", error);
+    }
+  };
+
   return (
     <div className="p-4 container">
       <GoalSpecificHeader
         name={goal.name}
         handleDelete={handleDeleteGoal}
         handleEdit={handleEditGoal}
+      />
+
+      <GoalComplete
+        handleComplete={handleGoalComplete}
+        goal={goal}
+        loading={false}
+        error={null}
       />
 
       <SecondHeaderSpecific
