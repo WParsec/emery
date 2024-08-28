@@ -136,7 +136,7 @@ export function GoalToggle({
     e.stopPropagation(); // Prevent the click event from bubbling up to the parent
     const newStatus = e.target.checked;
     setIsCompleted(newStatus);
-    onToggleComplete(goal.id, newStatus);
+    onToggleComplete(goal.id, newStatus); // Pass both the ID and the completed status
   };
 
   return (
