@@ -1,8 +1,7 @@
-// app/goals/[id]/page.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // For extracting the ID from the URL
+import { useParams, useRouter } from "next/navigation"; // For extracting the ID from the URL
 import GoalSpecificHeader from "./components/GoalSpecificHeader";
 import SecondHeaderSpecific from "./components/SecondHeaderSpecific";
 import Modal from "@/components/modal/Modal";
@@ -12,8 +11,10 @@ import useAddMilestone from "@/hooks/useAddMilestone";
 import useFetchMilestones from "@/hooks/useFetchMilestones";
 import useUpdateMilestoneStatus from "@/hooks/useUpdateMilestoneStatus";
 import { MilestoneToggle } from "@/components/ToggleSwitch";
-import HabitToggle from "@/components/ToggleSwitch";
+import HabitCard from "@/components/HabitCard"; // Import HabitCard
 import useFetchConnectedHabits from "@/hooks/useFetchConnectedHabits";
+import useUpdateHabitStatus from "@/hooks/useUpdateHabitStatus";
+import DeleteForm from "@/components/forms/DeleteForm";
 
 type Goal = {
   id: string;
@@ -38,17 +39,19 @@ type Milestones = {
 type Habits = {
   id: string;
   name: string;
-  description: string;
-  category: string;
-  start_date: string;
-  end_date: string;
   completed: boolean;
+  times_per_week: number;
 };
 
 export default function GoalPage() {
   const { id: goalId } = useParams(); // Extract goal ID from the URL
+  const router = useRouter();
   const [goal, setGoal] = useState<Goal>(); // Store the goal data
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   const [milestones, setMilestones] = useState<Milestones[]>([]);
   const [habits, setHabits] = useState<Habits[]>([]);
   const { addMilestone } = useAddMilestone();
@@ -61,6 +64,7 @@ export default function GoalPage() {
     loading: updateLoading,
     error: updateError,
   } = useUpdateMilestoneStatus();
+  const { updateHabitStatus } = useUpdateHabitStatus();
 
   useEffect(() => {
     setMilestones(initialMilestones);
@@ -87,28 +91,51 @@ export default function GoalPage() {
   }, [goalId]);
 
   const handleAddMilestone = () => {
-    setIsModalOpen(true);
+    setIsMilestoneModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseMilestoneModal = () => {
+    setIsMilestoneModalOpen(false);
+  };
+
+  const handleDeleteGoal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const handleEditGoal = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!goal) return;
+
+    const { error } = await supabase.from("goals").delete().eq("id", goal.id);
+
+    if (error) {
+      console.error("Error deleting goal:", error);
+    } else {
+      setIsDeleteModalOpen(false);
+      router.push("/goals"); // Redirect to the goals page after deletion
+    }
   };
 
   const handleMilestoneSubmit = async (milestone: any) => {
-    // Use the addMilestone hook to submit the milestone data
     const newMilestone = await addMilestone({
       ...milestone,
       goal_id: goalId, // Connect the milestone to the correct goal
     });
 
     if (newMilestone && newMilestone.length > 0) {
-      console.log("Milestone added successfully:", newMilestone[0]);
-
-      // Optionally update the state if you want to show the new milestone without re-fetching
       setMilestones([...milestones, newMilestone[0]]);
-
-      // Close the modal after successful submission
-      handleCloseModal();
+      handleCloseMilestoneModal();
     } else {
       console.log("Failed to add milestone", newMilestone);
     }
@@ -126,20 +153,33 @@ export default function GoalPage() {
     );
   };
 
+  const handleHabitToggleComplete = async (
+    habitId: string,
+    completed: boolean
+  ) => {
+    await updateHabitStatus(habitId, completed);
+    setHabits(
+      habits.map((habit) =>
+        habit.id === habitId ? { ...habit, completed } : habit
+      )
+    );
+  };
+
   if (!goal) {
     return <div>Loading...</div>;
   }
 
-  console.log(milestones);
-  console.log("habits", habits);
-
   return (
     <div className="p-4 container">
-      <GoalSpecificHeader name={goal.name} />
+      <GoalSpecificHeader
+        name={goal.name}
+        handleDelete={handleDeleteGoal}
+        handleEdit={handleEditGoal}
+      />
 
       <SecondHeaderSpecific
         goal={goal}
-        handleAddMilestone={handleAddMilestone} // Rename handleAddGoal for adding milestone
+        handleAddMilestone={handleAddMilestone}
       />
 
       <div className="py-4 border-b border-card-bg">
@@ -153,7 +193,7 @@ export default function GoalPage() {
           {milestones.map((milestone) => (
             <div key={milestone.id} className="flex items-center gap-4">
               <div
-                className={`flex-1 flex justify-between p-4 my-2 bg-card-bg rounded-lg ${
+                className={`flex-1 flex justify-between p-4 mb-2 bg-card-bg rounded-lg ${
                   milestone.completed
                     ? "bg-gradient-to-r from-dark-turquoise to-green"
                     : "bg-card-bg"
@@ -181,44 +221,49 @@ export default function GoalPage() {
         <div className="w-full md:w-1/2">
           <h2 className="font-bold mb-2">Connected Habits:</h2>
           {habits.map((habit) => (
-            <div key={habit.id} className="flex items-center gap-4">
-              <div
-                className={`flex-1 flex justify-between p-4 my-2 bg-card-bg rounded-lg ${
-                  habit.completed
-                    ? "bg-gradient-to-r from-dark-turquoise to-green"
-                    : "bg-card-bg"
-                }`}
-              >
-                <div>
-                  <p className="text-sm">{habit.name}</p>
-                  {habit.description && (
-                    <p className="text-xs">{habit.description}</p>
-                  )}
-                  <p className="text-xs">
-                    Completed: {habit.completed ? "Yes" : "No"}
-                  </p>
-                </div>
-                <HabitToggle
-                  habit={habit}
-                  onToggleComplete={handleToggleComplete}
-                  loading={updateLoading}
-                  error={updateError}
-                />
-              </div>
-            </div>
+            <HabitCard
+              onClick={() => {}}
+              key={habit.id}
+              habit={habit}
+              onToggleComplete={handleHabitToggleComplete}
+              loading={updateLoading}
+              error={updateError}
+            />
           ))}
         </div>
       </div>
 
+      {/* Milestone Modal */}
       <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        isOpen={isMilestoneModalOpen}
+        onClose={handleCloseMilestoneModal}
         title="Add Milestone"
       >
         <NewMilestoneForm
           onSubmit={handleMilestoneSubmit}
-          onCancel={handleCloseModal}
+          onCancel={handleCloseMilestoneModal}
         />
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        title="Delete Goal"
+      >
+        <DeleteForm
+          handleConfirmDelete={handleConfirmDelete}
+          handleCloseDeleteModal={handleCloseDeleteModal}
+        />
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        title="Edit Goal"
+      >
+        <div></div>
       </Modal>
     </div>
   );

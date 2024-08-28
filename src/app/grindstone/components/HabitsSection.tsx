@@ -1,15 +1,15 @@
+// app/[yourPath]/HabitsSection.tsx
+
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ButtonTransparent from "@/components/ButtonTransparent";
-import HabitToggle from "@/components/ToggleSwitch";
 import useUpdateHabitStatus from "@/hooks/useUpdateHabitStatus";
-
-// Modal
 import Modal from "@/components/modal/Modal";
 import NewHabitForm from "@/components/forms/NewHabitForm";
 import useAddHabit from "@/hooks/useAddHabit";
+import HabitCard from "@/components/HabitCard"; // Import the new HabitCard component
 
 type Habit = {
   id: string;
@@ -23,7 +23,7 @@ type HabitsSectionProps = {
   habits: Habit[];
   loading: boolean;
   error: string | null;
-  onHabitStatusChange: (updatedHabits: Habit[]) => void; // Callback function to pass the updated habits
+  onHabitStatusChange: (updatedHabits: Habit[]) => void;
 };
 
 export default function HabitsSection({
@@ -36,11 +36,9 @@ export default function HabitsSection({
   const [habits, setHabits] = useState<Habit[]>(initialHabits);
   const router = useRouter();
   const { addHabit } = useAddHabit();
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleAddHabit = () => {
-    console.log("Add habit");
     setIsModalOpen(true);
   };
 
@@ -49,21 +47,15 @@ export default function HabitsSection({
   };
 
   const handleSubmit = async (habit: any) => {
-    console.log("Submitting habit:", habit);
     const newHabit = await addHabit(habit);
 
     if (newHabit && newHabit.length > 0) {
-      // Ensure newHabit contains data
-      console.log("New habit added in HabitsSection:", newHabit[0]);
-
-      const updatedHabits = [...habits, newHabit[0]]; // newHabit is an array, so we access the first element
+      const updatedHabits = [...habits, newHabit[0]];
       setHabits(updatedHabits);
       onHabitStatusChange(updatedHabits);
-    } else {
-      console.log("Failed to add habit", newHabit);
     }
 
-    handleCloseModal(); // Close the modal
+    handleCloseModal();
   };
 
   const {
@@ -72,7 +64,6 @@ export default function HabitsSection({
     loading: updateLoading,
   } = useUpdateHabitStatus();
 
-  // Update habits when initialHabits prop changes
   useEffect(() => {
     setHabits(initialHabits);
   }, [initialHabits]);
@@ -88,7 +79,7 @@ export default function HabitsSection({
         habit.id === habitId ? { ...habit, completed } : habit
       );
       setHabits(updatedHabits);
-      onHabitStatusChange(updatedHabits); // Pass the updated habits array back to the parent component
+      onHabitStatusChange(updatedHabits);
     } catch {
       console.error("Failed to update habit status");
     }
@@ -105,29 +96,14 @@ export default function HabitsSection({
       {habits.length > 0 ? (
         <div>
           {habits.map((habit: Habit) => (
-            <div
+            <HabitCard
               key={habit.id}
-              onClick={() => handleHabitClick(habit.id)}
-              className={`${
-                habit.completed
-                  ? "bg-gradient-to-r from-dark-turquoise to-green"
-                  : "bg-card-bg"
-              } transition-all duration-300 flex justify-between items-center mb-4 p-4 rounded-lg cursor-pointer`}
-            >
-              <div>
-                <p className="text-sm">{habit.name}</p>
-                <p className="text-xs">
-                  Interval: {habit.times_per_week} days/week
-                </p>
-                {/* <p className="text-xs">Remaining this week: </p> */}
-              </div>
-              <HabitToggle
-                habit={habit}
-                onToggleComplete={handleToggleComplete}
-                loading={updateLoading}
-                error={updateError}
-              />
-            </div>
+              habit={habit}
+              onClick={handleHabitClick}
+              onToggleComplete={handleToggleComplete}
+              loading={updateLoading}
+              error={updateError}
+            />
           ))}
         </div>
       ) : (

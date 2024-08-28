@@ -1,18 +1,12 @@
 import React from "react";
 import TimeProgressBar from "@/components/TimeProgressBar";
-import ButtonTransparent from "@/components/ButtonTransparent";
 
 type GoalCardProps = {
   goal: any;
   handleGoalClick: (id: string) => void;
-  handleMilestoneClick: (goal: any) => void; // Add milestone click handler
 };
 
-const GoalCard = ({
-  goal,
-  handleGoalClick,
-  handleMilestoneClick,
-}: GoalCardProps) => {
+const GoalCard = ({ goal, handleGoalClick }: GoalCardProps) => {
   // Calculate the percentage of completed milestones
   const progressPercentage =
     goal.milestone_count > 0
@@ -48,10 +42,9 @@ const GoalCard = ({
               ></div>
             </div>
           ) : (
-            <ButtonTransparent
-              title="Add Milestones to track progress"
-              handleClick={() => handleMilestoneClick(goal)}
-            />
+            <p className="text-xs text-silver">
+              Add milestones to track progress
+            </p>
           )}
         </div>
       </div>

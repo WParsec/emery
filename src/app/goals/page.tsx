@@ -6,10 +6,9 @@ import SecondHeader from "./components/SecondHeader";
 import GoalCard from "./components/GoalCard";
 import Modal from "@/components/modal/Modal";
 import NewGoalForm from "@/components/forms/NewGoalForm";
-import NewMilestoneForm from "@/components/forms/NewMilestoneForm"; // Import NewMilestoneForm
 import useFetchGoals from "@/hooks/useFetchGoals";
-import useAddMilestone from "@/hooks/useAddMilestone";
 import { useRouter } from "next/navigation";
+import useAddGoal from "@/hooks/useAddGoal";
 
 type Goal = {
   id: string;
@@ -27,9 +26,7 @@ export default function GoalsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [filteredGoals, setFilteredGoals] = useState<Goal[]>([]);
-  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
-  const [milestones, setMilestones] = useState<any[]>([]); // Manage milestones state
-  const { addMilestone } = useAddMilestone();
+  const { addGoal } = useAddGoal();
   const route = useRouter();
 
   useEffect(() => {
@@ -49,41 +46,20 @@ export default function GoalsPage() {
   };
 
   const handleAddGoal = () => {
-    setSelectedGoal(null); // Ensure no goal is selected when adding a new goal
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedGoal(null); // Clear selected goal when closing modal
   };
 
-  const handleMilestoneClick = (goal: Goal) => {
-    setSelectedGoal(goal);
-    setIsModalOpen(true);
-  };
-
-  const handleMilestoneSubmit = async (milestone: any) => {
-    console.log("New milestone added:", milestone, "to goal:", selectedGoal);
-
-    // Use the addMilestone hook to submit the milestone data
-    const newMilestone = await addMilestone({
-      ...milestone,
-      goal_id: selectedGoal?.id, // Ensure you connect the milestone to the correct goal
-    });
-
-    if (newMilestone && newMilestone.length > 0) {
-      console.log("Milestone added successfully:", newMilestone[0]);
-
-      // Optionally update the state if you want to show the new milestone without re-fetching
-      const updatedMilestones = [...milestones, newMilestone[0]];
-      setMilestones(updatedMilestones);
-
-      // Close the modal after successful submission
+  const handleGoalSubmit = async (goal: any) => {
+    const newGoal = await addGoal(goal);
+    if (newGoal && newGoal.length > 0) {
+      const updatedGoals = [...goals, newGoal[0]];
+      setGoals(updatedGoals);
+      setFilteredGoals(updatedGoals); // Update the filtered goals as well
       handleCloseModal();
-      route.push(`/goal/${selectedGoal?.id}`);
-    } else {
-      console.log("Failed to add milestone", newMilestone);
     }
   };
 
@@ -111,32 +87,15 @@ export default function GoalsPage() {
           <GoalCard
             key={goal.id}
             goal={goal}
-            handleGoalClick={() => {
-              handleGoalClick(goal.id);
-            }}
-            handleMilestoneClick={() => handleMilestoneClick(goal)} // Pass the goal to handleMilestoneClick
+            handleGoalClick={handleGoalClick}
           />
         ))
       ) : (
         <div>No goals available</div>
       )}
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        title={selectedGoal ? "Add Milestone" : "Add Goal"}
-      >
-        {selectedGoal ? (
-          <NewMilestoneForm
-            onSubmit={handleMilestoneSubmit}
-            onCancel={handleCloseModal}
-          />
-        ) : (
-          <NewGoalForm
-            onSubmit={() => {}} // Add functionality for adding a goal if needed
-            onCancel={handleCloseModal}
-          />
-        )}
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title="Add Goal">
+        <NewGoalForm onSubmit={handleGoalSubmit} onCancel={handleCloseModal} />
       </Modal>
     </div>
   );
